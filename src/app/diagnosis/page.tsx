@@ -76,7 +76,15 @@ export default function DiagnosisPage() {
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
   const answeredCount = answers.length;
 
-  const handleAnswer = (value: "A" | "B") => {
+  const likertOptions: { value: import("@/types/diagnosis").AnswerValue; label: string }[] = [
+    { value: "A", label: "そう思う" },
+    { value: "partial_A", label: "ややそう思う" },
+    { value: "neutral", label: "どちらともいえない" },
+    { value: "partial_B", label: "あまりそう思わない" },
+    { value: "B", label: "そう思わない" },
+  ];
+
+  const handleAnswer = (value: import("@/types/diagnosis").AnswerValue) => {
     answerQuestion(currentQuestion.id, value);
     if (currentQuestionIndex < questions.length - 1) {
       setTimeout(() => goToNextQuestion(), 300);
@@ -187,37 +195,44 @@ export default function DiagnosisPage() {
               {currentQuestion.text}
             </h2>
 
-            {/* Answer options */}
-            <div className="space-y-3">
-              {[
-                { value: "A" as const, text: currentQuestion.optionA, label: "A" },
-                { value: "B" as const, text: currentQuestion.optionB, label: "B" },
-              ].map((option) => (
-                <motion.button
-                  key={option.value}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={() => handleAnswer(option.value)}
-                  className={`w-full text-left p-4 rounded-xl border transition-all ${
-                    currentAnswer?.value === option.value
-                      ? "bg-indigo-600/30 border-indigo-500 text-white"
-                      : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
+            {/* Scale extremes */}
+            <div className="flex justify-between text-xs text-gray-500 mb-2 px-1">
+              <span className="max-w-[40%] leading-tight">{currentQuestion.optionA}</span>
+              <span className="max-w-[40%] text-right leading-tight">{currentQuestion.optionB}</span>
+            </div>
+
+            {/* 5-point Likert scale */}
+            <div className="grid grid-cols-5 gap-2">
+              {likertOptions.map((option, i) => {
+                const isSelected = currentAnswer?.value === option.value;
+                const isMiddle = i === 2;
+                return (
+                  <motion.button
+                    key={option.value}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleAnswer(option.value)}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                      isSelected
+                        ? "bg-indigo-600/30 border-indigo-500 text-white"
+                        : isMiddle
+                        ? "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10 hover:border-white/25"
+                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20"
+                    }`}
+                  >
                     <span
-                      className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${
-                        currentAnswer?.value === option.value
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        isSelected
                           ? "bg-indigo-500 text-white"
                           : "bg-white/10 text-gray-400"
                       }`}
                     >
-                      {option.label}
+                      {i + 1}
                     </span>
-                    <span className="flex-1 leading-relaxed">{option.text}</span>
-                  </div>
-                </motion.button>
-              ))}
+                    <span className="text-[10px] text-center leading-tight">{option.label}</span>
+                  </motion.button>
+                );
+              })}
             </div>
           </motion.div>
         </AnimatePresence>

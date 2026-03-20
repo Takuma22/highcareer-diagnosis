@@ -44,7 +44,7 @@ export interface Question {
   };
 }
 
-export type AnswerValue = "A" | "B" | "partial_A" | "partial_B";
+export type AnswerValue = "A" | "B" | "partial_A" | "partial_B" | "neutral";
 
 export interface Answer {
   questionId: number;
