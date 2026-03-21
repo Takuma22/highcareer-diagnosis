@@ -14,26 +14,28 @@ import {
 } from "recharts";
 import { useDiagnosisStore } from "@/store/diagnosisStore";
 
-const LINE_URL = "https://lin.ee/XXXXXXXX"; // ← 実際のLINE URLに置き換え
+const LINE_URL = "https://lin.ee/XXXXXXXX";
 
 function AxisBar({
   label,
   oppositeLabel,
   percent,
   color,
+  explanation,
 }: {
   label: string;
   oppositeLabel: string;
   percent: number;
   color: string;
+  explanation: string;
 }) {
   return (
-    <div>
+    <div className="mb-4">
       <div className="flex justify-between text-xs text-gray-400 mb-1">
-        <span>{label}</span>
+        <span className="font-medium">{label}</span>
         <span>{oppositeLabel}</span>
       </div>
-      <div className="w-full bg-white/5 rounded-full h-3 relative">
+      <div className="w-full bg-white/5 rounded-full h-3 relative mb-2">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
@@ -44,13 +46,14 @@ function AxisBar({
           {percent}%
         </div>
       </div>
+      <p className="text-xs text-gray-500 leading-relaxed">{explanation}</p>
     </div>
   );
 }
 
 export default function ResultPage() {
   const router = useRouter();
-  const { result, userProfile, aiInsight, reset } = useDiagnosisStore();
+  const { result, userProfile, aiInsight, reset, answers } = useDiagnosisStore();
 
   useEffect(() => {
     if (!result) {
@@ -75,6 +78,15 @@ export default function ResultPage() {
       salaryProjection.current) *
       100
   );
+
+  // 回答傾向サマリー
+  const totalAnswers = answers.length;
+  const avgScore = totalAnswers > 0
+    ? Math.round((answers.reduce((sum, a) => sum + a.value, 0) / totalAnswers) * 10) / 10
+    : 0;
+  const highCount = answers.filter((a) => a.value >= 4).length;
+  const lowCount = answers.filter((a) => a.value <= 2).length;
+  const midCount = answers.filter((a) => a.value === 3).length;
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] relative overflow-hidden">
@@ -106,42 +118,92 @@ export default function ResultPage() {
           transition={{ delay: 0.1 }}
           className="glass-card p-5"
         >
-          <p className="text-gray-300 leading-relaxed">{result.description}</p>
+          <h2 className="text-base font-semibold text-white mb-2">タイプ概要</h2>
+          <p className="text-gray-300 leading-relaxed text-sm">{result.description}</p>
         </motion.div>
 
-        {/* Axis Bars */}
+        {/* 回答傾向サマリー */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="glass-card p-5"
+        >
+          <h2 className="text-base font-semibold text-white mb-3">回答傾向サマリー</h2>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3 text-center">
+              <div className="text-2xl font-black text-indigo-300">{avgScore}</div>
+              <div className="text-xs text-gray-500 mt-1">平均スコア<br/>（5点満点）</div>
+            </div>
+            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
+              <div className="text-2xl font-black text-green-300">{highCount}</div>
+              <div className="text-xs text-gray-500 mt-1">強く同意<br/>（4〜5点）</div>
+            </div>
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-center">
+              <div className="text-2xl font-black text-amber-300">{midCount}</div>
+              <div className="text-xs text-gray-500 mt-1">どちらでもない<br/>（3点）</div>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 leading-relaxed">
+            {totalAnswers}問に回答。{highCount > totalAnswers * 0.5
+              ? "多くの質問に強く同意しており、自己認識が明確なタイプです。"
+              : midCount > totalAnswers * 0.4
+              ? "中間的な回答が多く、バランス型・柔軟な思考を持つタイプです。"
+              : "様々な方向に回答が分散しており、複数の側面を持つ複合型タイプです。"
+            }
+          </p>
+        </motion.div>
+
+        {/* Axis Bars + Explanations */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="glass-card p-5"
         >
-          <h2 className="text-lg font-semibold text-white mb-4">4軸スコア</h2>
-          <div className="space-y-5">
-            <AxisBar
-              label={`戦略思考 (S) ${axisPercentage.s_percent}%`}
-              oppositeLabel={`実行力 (E) ${100 - axisPercentage.s_percent}%`}
-              percent={axisPercentage.s_percent}
-              color="bg-indigo-500"
-            />
-            <AxisBar
-              label={`データ思考 (D) ${axisPercentage.d_percent}%`}
-              oppositeLabel={`関係構築 (R) ${100 - axisPercentage.d_percent}%`}
-              percent={axisPercentage.d_percent}
-              color="bg-blue-500"
-            />
-            <AxisBar
-              label={`リーダーシップ (L) ${axisPercentage.l_percent}%`}
-              oppositeLabel={`専門追求 (X) ${100 - axisPercentage.l_percent}%`}
-              percent={axisPercentage.l_percent}
-              color="bg-purple-500"
-            />
-            <AxisBar
-              label={`野心・向上心 (A) ${axisPercentage.a_percent}%`}
-              oppositeLabel={`安定志向 (B) ${100 - axisPercentage.a_percent}%`}
-              percent={axisPercentage.a_percent}
-              color="bg-amber-500"
-            />
+          <h2 className="text-base font-semibold text-white mb-4">4軸スコアと意味解説</h2>
+          <AxisBar
+            label={`戦略思考 (S) ${axisPercentage.s_percent}%`}
+            oppositeLabel={`実行力 (E) ${100 - axisPercentage.s_percent}%`}
+            percent={axisPercentage.s_percent}
+            color="bg-indigo-500"
+            explanation={result.axisExplanations.axis1}
+          />
+          <AxisBar
+            label={`データ思考 (D) ${axisPercentage.d_percent}%`}
+            oppositeLabel={`関係構築 (R) ${100 - axisPercentage.d_percent}%`}
+            percent={axisPercentage.d_percent}
+            color="bg-blue-500"
+            explanation={result.axisExplanations.axis2}
+          />
+          <AxisBar
+            label={`リーダーシップ (L) ${axisPercentage.l_percent}%`}
+            oppositeLabel={`専門追求 (X) ${100 - axisPercentage.l_percent}%`}
+            percent={axisPercentage.l_percent}
+            color="bg-purple-500"
+            explanation={result.axisExplanations.axis3}
+          />
+          <AxisBar
+            label={`野心・向上心 (A) ${axisPercentage.a_percent}%`}
+            oppositeLabel={`安定志向 (B) ${100 - axisPercentage.a_percent}%`}
+            percent={axisPercentage.a_percent}
+            color="bg-amber-500"
+            explanation={result.axisExplanations.axis4}
+          />
+        </motion.div>
+
+        {/* Detailed Analysis */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.22 }}
+          className="glass-card p-5"
+        >
+          <h2 className="text-base font-semibold text-white mb-3">詳細な性格分析</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            {result.detailedAnalysis.split("\n\n").map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
           </div>
         </motion.div>
 
@@ -152,7 +214,7 @@ export default function ResultPage() {
           transition={{ delay: 0.25 }}
           className="glass-card p-5"
         >
-          <h2 className="text-lg font-semibold text-white mb-3">コンサルフィット度</h2>
+          <h2 className="text-base font-semibold text-white mb-3">コンサルフィット度</h2>
           <div className="flex items-center gap-4">
             <div className="relative w-24 h-24 flex-shrink-0">
               <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
@@ -211,7 +273,7 @@ export default function ResultPage() {
           className="glass-card p-5"
         >
           <div className="flex items-start justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">年収ジャンプアップ予測</h2>
+            <h2 className="text-base font-semibold text-white">年収ジャンプアップ予測</h2>
             <div className="text-right">
               <div className="text-2xl font-black text-green-400">+{jumpRate}%</div>
               <div className="text-xs text-gray-500">3年後目安</div>
@@ -277,22 +339,28 @@ export default function ResultPage() {
           transition={{ delay: 0.35 }}
           className="glass-card p-5"
         >
-          <h2 className="text-lg font-semibold text-white mb-4">おすすめポジション</h2>
-          <div className="space-y-3">
+          <h2 className="text-base font-semibold text-white mb-4">おすすめポジション（理由付き）</h2>
+          <div className="space-y-4">
             {result.recommendedRoles.map((role, i) => (
-              <div key={i} className="flex items-start gap-3 bg-white/5 rounded-lg p-3">
-                <div className="flex-shrink-0 w-10 h-10 gradient-bg rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                  #{i + 1}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-white text-sm">{role.title}</span>
-                    <span className="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full">
-                      フィット {role.fitScore}%
-                    </span>
+              <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div className="flex items-start gap-3 mb-2">
+                  <div className="flex-shrink-0 w-10 h-10 gradient-bg rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                    #{i + 1}
                   </div>
-                  <div className="text-xs text-gray-400 mb-1">{role.firm}</div>
-                  <div className="text-xs text-gray-500">{role.description}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <span className="font-semibold text-white text-sm">{role.title}</span>
+                      <span className="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full">
+                        フィット {role.fitScore}%
+                      </span>
+                    </div>
+                    <div className="text-xs text-indigo-400 font-medium mb-1">{role.firm}</div>
+                    <div className="text-xs text-gray-400">{role.description}</div>
+                  </div>
+                </div>
+                <div className="bg-white/5 rounded-lg p-3 mt-2 border-l-2 border-indigo-500/50">
+                  <div className="text-xs text-indigo-400 font-medium mb-1">推薦理由</div>
+                  <p className="text-xs text-gray-300 leading-relaxed">{role.reason}</p>
                 </div>
               </div>
             ))}
@@ -337,36 +405,40 @@ export default function ResultPage() {
           transition={{ delay: 0.45 }}
           className="glass-card p-5"
         >
-          <h2 className="text-lg font-semibold text-white mb-3">コンサル転職アドバイス</h2>
+          <h2 className="text-base font-semibold text-white mb-3">キャリアチェンジアドバイス</h2>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs text-gray-400 bg-white/5 rounded-full px-3 py-1 border border-white/10">
+              目安期間: {result.consultingAdvice.timeline}
+            </span>
+          </div>
           <p className="text-gray-300 text-sm leading-relaxed mb-4">
             {result.consultingAdvice.overview}
           </p>
           <div className="space-y-3">
             <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3">
-              <div className="text-xs text-indigo-400 font-medium mb-2">活かすべき強み</div>
+              <div className="text-xs text-indigo-400 font-medium mb-2">今すぐ活かすべき強み</div>
               <ul className="space-y-1">
                 {result.consultingAdvice.strengthsToLeverage.map((s, i) => (
                   <li key={i} className="text-xs text-gray-300 flex items-start gap-2">
-                    <span className="text-indigo-400">•</span>{s}
+                    <span className="text-indigo-400 mt-0.5">•</span>{s}
                   </li>
                 ))}
               </ul>
             </div>
             <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
-              <div className="text-xs text-purple-400 font-medium mb-2">習得すべきスキル</div>
+              <div className="text-xs text-purple-400 font-medium mb-2">優先的に習得すべきスキル</div>
               <ul className="space-y-1">
                 {result.consultingAdvice.skillsToAcquire.map((s, i) => (
                   <li key={i} className="text-xs text-gray-300 flex items-start gap-2">
-                    <span className="text-purple-400">•</span>{s}
+                    <span className="text-purple-400 mt-0.5">•</span>{s}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex items-start gap-3">
-              <span className="text-2xl">🚀</span>
+            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 flex items-start gap-3">
               <div>
-                <div className="text-xs text-amber-400 font-medium mb-1">まず取るべきアクション</div>
-                <p className="text-xs text-gray-300">{result.consultingAdvice.firstStep}</p>
+                <div className="text-xs text-green-400 font-medium mb-1">まず取るべきアクション</div>
+                <p className="text-xs text-gray-300 leading-relaxed">{result.consultingAdvice.firstStep}</p>
               </div>
             </div>
           </div>
@@ -384,7 +456,7 @@ export default function ResultPage() {
               <div className="w-6 h-6 rounded-full gradient-bg flex items-center justify-center text-xs font-bold">
                 AI
               </div>
-              <h2 className="text-lg font-semibold text-white">AIパーソナル分析</h2>
+              <h2 className="text-base font-semibold text-white">AIパーソナル分析</h2>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
               {aiInsight}

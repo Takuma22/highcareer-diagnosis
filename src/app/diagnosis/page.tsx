@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDiagnosisStore } from "@/store/diagnosisStore";
 import { questions } from "@/lib/questions";
+import { AnswerValue } from "@/types/diagnosis";
 
 const categoryLabels: Record<string, string> = {
   experience: "経験・実績",
@@ -18,6 +19,30 @@ const categoryColors: Record<string, string> = {
   skill: "bg-green-500/20 text-green-300 border-green-500/30",
   aptitude: "bg-purple-500/20 text-purple-300 border-purple-500/30",
   mindset: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+};
+
+const likertOptions: { value: AnswerValue; label: string; shortLabel: string }[] = [
+  { value: 1, label: "まったくそう思わない", shortLabel: "全く違う" },
+  { value: 2, label: "そう思わない", shortLabel: "違う" },
+  { value: 3, label: "どちらでもない", shortLabel: "中間" },
+  { value: 4, label: "そう思う", shortLabel: "そう思う" },
+  { value: 5, label: "とてもそう思う", shortLabel: "強くそう思う" },
+];
+
+const likertColors: Record<number, string> = {
+  1: "border-red-500/60 bg-red-500/20 text-red-300",
+  2: "border-orange-500/60 bg-orange-500/20 text-orange-300",
+  3: "border-gray-500/60 bg-gray-500/20 text-gray-300",
+  4: "border-blue-500/60 bg-blue-500/20 text-blue-300",
+  5: "border-indigo-500/60 bg-indigo-500/20 text-indigo-200",
+};
+
+const likertInactiveColors: Record<number, string> = {
+  1: "border-white/10 hover:border-red-500/40 hover:bg-red-500/10 text-gray-400",
+  2: "border-white/10 hover:border-orange-500/40 hover:bg-orange-500/10 text-gray-400",
+  3: "border-white/10 hover:border-gray-500/40 hover:bg-gray-500/10 text-gray-400",
+  4: "border-white/10 hover:border-blue-500/40 hover:bg-blue-500/10 text-gray-400",
+  5: "border-white/10 hover:border-indigo-500/40 hover:bg-indigo-500/10 text-gray-400",
 };
 
 export default function DiagnosisPage() {
@@ -44,7 +69,6 @@ export default function DiagnosisPage() {
 
   useEffect(() => {
     if (step === "loading" && result) {
-      // AI診断APIを呼ぶ
       fetchAIInsight();
     }
   }, [step, result]);
@@ -76,18 +100,10 @@ export default function DiagnosisPage() {
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
   const answeredCount = answers.length;
 
-  const likertOptions: { value: import("@/types/diagnosis").AnswerValue; label: string }[] = [
-    { value: "A", label: "そう思う" },
-    { value: "partial_A", label: "ややそう思う" },
-    { value: "neutral", label: "どちらともいえない" },
-    { value: "partial_B", label: "あまりそう思わない" },
-    { value: "B", label: "そう思わない" },
-  ];
-
-  const handleAnswer = (value: import("@/types/diagnosis").AnswerValue) => {
+  const handleAnswer = (value: AnswerValue) => {
     answerQuestion(currentQuestion.id, value);
     if (currentQuestionIndex < questions.length - 1) {
-      setTimeout(() => goToNextQuestion(), 300);
+      setTimeout(() => goToNextQuestion(), 350);
     }
   };
 
@@ -113,7 +129,7 @@ export default function DiagnosisPage() {
           </div>
           <h2 className="text-2xl font-bold gradient-text mb-2">AI分析中...</h2>
           <p className="text-gray-400">
-            あなたの回答をもとにコンサル適性を診断しています
+            あなたの回答をもとにキャリア適性を診断しています
           </p>
           <div className="mt-4 space-y-2 text-sm text-gray-500">
             <motion.p
@@ -150,7 +166,7 @@ export default function DiagnosisPage() {
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8">
         {/* Progress Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-400 text-sm">
               Q{currentQuestionIndex + 1} / {questions.length}
@@ -191,45 +207,63 @@ export default function DiagnosisPage() {
             </div>
 
             {/* Question text */}
-            <h2 className="text-xl font-semibold text-white mb-6 leading-relaxed">
+            <h2 className="text-lg font-semibold text-white mb-6 leading-relaxed">
               {currentQuestion.text}
             </h2>
 
-            {/* Scale extremes */}
-            <div className="flex justify-between text-xs text-gray-500 mb-2 px-1">
-              <span className="max-w-[40%] leading-tight">{currentQuestion.optionA}</span>
-              <span className="max-w-[40%] text-right leading-tight">{currentQuestion.optionB}</span>
-            </div>
-
-            {/* 5-point Likert scale */}
-            <div className="grid grid-cols-5 gap-2">
-              {likertOptions.map((option, i) => {
+            {/* 5段階リッカートスケール */}
+            {/* Desktop: 横並び5ボタン */}
+            <div className="hidden sm:flex gap-2 mb-2">
+              {likertOptions.map((option) => {
                 const isSelected = currentAnswer?.value === option.value;
-                const isMiddle = i === 2;
                 return (
                   <motion.button
                     key={option.value}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => handleAnswer(option.value)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                    className={`flex-1 py-3 px-2 rounded-xl border text-center text-xs font-medium transition-all ${
                       isSelected
-                        ? "bg-indigo-600/30 border-indigo-500 text-white"
-                        : isMiddle
-                        ? "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10 hover:border-white/25"
-                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20"
+                        ? likertColors[option.value]
+                        : `bg-white/5 ${likertInactiveColors[option.value]}`
+                    }`}
+                  >
+                    <div className="text-lg mb-1">{option.value}</div>
+                    <div className="leading-tight">{option.shortLabel}</div>
+                  </motion.button>
+                );
+              })}
+            </div>
+            {/* Desktop: ラベル */}
+            <div className="hidden sm:flex justify-between text-xs text-gray-500 mb-4 px-1">
+              <span>まったくそう思わない</span>
+              <span>とてもそう思う</span>
+            </div>
+
+            {/* Mobile: 縦並び5ボタン */}
+            <div className="flex sm:hidden flex-col gap-2">
+              {likertOptions.map((option) => {
+                const isSelected = currentAnswer?.value === option.value;
+                return (
+                  <motion.button
+                    key={option.value}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => handleAnswer(option.value)}
+                    className={`w-full py-3 px-4 rounded-xl border text-left text-sm font-medium transition-all flex items-center gap-3 ${
+                      isSelected
+                        ? likertColors[option.value]
+                        : `bg-white/5 ${likertInactiveColors[option.value]}`
                     }`}
                   >
                     <span
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                        isSelected
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white/10 text-gray-400"
+                      className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+                        isSelected ? "bg-white/20" : "bg-white/10"
                       }`}
                     >
-                      {i + 1}
+                      {option.value}
                     </span>
-                    <span className="text-[10px] text-center leading-tight">{option.label}</span>
+                    <span>{option.label}</span>
                   </motion.button>
                 );
               })}
@@ -276,9 +310,7 @@ export default function DiagnosisPage() {
                 key={q.id}
                 onClick={() => {
                   const store = useDiagnosisStore.getState();
-                  store.goToStep(store.step); // no-op to trigger re-render
-                  // Navigate to question
-                  const diff = i - currentQuestionIndex;
+                  const diff = i - store.currentQuestionIndex;
                   if (diff > 0) {
                     for (let j = 0; j < diff; j++) store.goToNextQuestion();
                   } else {

@@ -1,8 +1,8 @@
 // 4軸の定義
 // 軸1: S (Strategic) vs E (Execution) - 戦略思考 vs 実行力
 // 軸2: D (Data) vs R (Relation) - データ・論理 vs 人間関係・感情
-// 軸3: L (Leadership) vs S (Specialist) - リーダーシップ vs 専門性
-// 軸4: A (Ambition) vs S (Stability) - 野心・変化志向 vs 安定志向
+// 軸3: L (Leadership) vs X (Specialist) - リーダーシップ vs 専門性
+// 軸4: A (Ambition) vs B (Balance/Stability) - 野心・変化志向 vs 安定志向
 
 export type Axis1 = "S" | "E"; // Strategic vs Execution
 export type Axis2 = "D" | "R"; // Data vs Relation
@@ -34,17 +34,16 @@ export type QuestionCategory =
 export interface Question {
   id: number;
   category: QuestionCategory;
-  text: string;
-  optionA: string;
-  optionB: string;
+  text: string; // 「〜だと思う」形式
   axisImpact: {
     axis: 1 | 2 | 3 | 4;
-    direction: "A_positive" | "B_positive"; // どちらの選択肢がpositive方向か
+    direction: "positive" | "negative"; // positive = 同意(5)がpositive方向
     weight: number; // 1-3
   };
 }
 
-export type AnswerValue = "A" | "B" | "partial_A" | "partial_B" | "neutral";
+// 5段階リッカートスケール: 1=まったくそう思わない 〜 5=とてもそう思う
+export type AnswerValue = 1 | 2 | 3 | 4 | 5;
 
 export interface Answer {
   questionId: number;
@@ -66,6 +65,8 @@ export interface DiagnosisResult {
   title: string;
   subtitle: string;
   description: string;
+  detailedAnalysis: string; // 500-800文字の詳細分析
+  axisExplanations: AxisExplanations; // 各軸の意味説明
   strengths: string[];
   challenges: string[];
   consultingFit: number; // 0-100%
@@ -75,11 +76,19 @@ export interface DiagnosisResult {
   lineCtaMessage: string;
 }
 
+export interface AxisExplanations {
+  axis1: string;
+  axis2: string;
+  axis3: string;
+  axis4: string;
+}
+
 export interface RecommendedRole {
   title: string;
   firm: string;
   fitScore: number;
   description: string;
+  reason: string;
 }
 
 export interface SalaryProjection {

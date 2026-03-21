@@ -79,7 +79,8 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
   calculateResult: () => {
     const { answers, userProfile } = get();
 
-    // スコア計算
+    // 5段階リッカートスケールのスコア計算
+    // value 1-5 → delta: 1=-base, 2=-base/2, 3=0, 4=+base/2, 5=+base
     const axisScore: AxisScore = { axis1: 0, axis2: 0, axis3: 0, axis4: 0 };
 
     answers.forEach((answer) => {
@@ -87,22 +88,14 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
       if (!question) return;
 
       const { axis, direction, weight } = question.axisImpact;
-      const baseScore = weight * 10; // 10, 20, 30
+      const baseScore = weight * 20; // 20, 40, 60
 
-      let delta = 0;
-      if (answer.value === "neutral") {
-        delta = 0;
-      } else if (direction === "A_positive") {
-        if (answer.value === "A") delta = baseScore;
-        else if (answer.value === "partial_A") delta = baseScore / 2;
-        else if (answer.value === "partial_B") delta = -baseScore / 2;
-        else delta = -baseScore;
-      } else {
-        if (answer.value === "B") delta = baseScore;
-        else if (answer.value === "partial_B") delta = baseScore / 2;
-        else if (answer.value === "partial_A") delta = -baseScore / 2;
-        else delta = -baseScore;
-      }
+      // 1→-base, 2→-base/2, 3→0, 4→+base/2, 5→+base
+      const normalized = answer.value - 3; // -2, -1, 0, 1, 2
+      const rawDelta = (normalized / 2) * baseScore;
+
+      // direction: positive = そのまま、negative = 反転
+      const delta = direction === "positive" ? rawDelta : -rawDelta;
 
       const axisKey = `axis${axis}` as keyof AxisScore;
       axisScore[axisKey] = Math.max(-100, Math.min(100, axisScore[axisKey] + delta));
