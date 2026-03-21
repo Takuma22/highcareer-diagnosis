@@ -35,16 +35,13 @@ function AxisBar({
         <span className="font-medium">{label}</span>
         <span>{oppositeLabel}</span>
       </div>
-      <div className="w-full bg-white/5 rounded-full h-3 relative mb-2">
+      <div className="w-full bg-white/5 rounded-full h-3 mb-2">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 1, ease: "easeOut" }}
           className={`h-3 rounded-full ${color}`}
         />
-        <div className="absolute right-0 top-0 text-xs text-gray-400 -mt-5">
-          {percent}%
-        </div>
       </div>
       <p className="text-xs text-gray-500 leading-relaxed">{explanation}</p>
     </div>

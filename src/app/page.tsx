@@ -190,9 +190,20 @@ export default function HomePage() {
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
               >
                 <option value="" className="bg-gray-900">選択</option>
-                {[300, 350, 400, 450, 500, 550, 600, 650, 700, 800, 900, 1000, 1200, 1500].map((s) => (
-                  <option key={s} value={s} className="bg-gray-900">
-                    {s}万円
+                {[
+                  { label: "〜300万円", value: 250 },
+                  { label: "300万〜500万円", value: 400 },
+                  { label: "500万〜700万円", value: 600 },
+                  { label: "700万〜1,000万円", value: 850 },
+                  { label: "1,000万〜1,500万円", value: 1250 },
+                  { label: "1,500万〜2,000万円", value: 1750 },
+                  { label: "2,000万〜3,000万円", value: 2500 },
+                  { label: "3,000万〜5,000万円", value: 4000 },
+                  { label: "5,000万〜1億円", value: 7500 },
+                  { label: "1億円〜", value: 12000 },
+                ].map((s) => (
+                  <option key={s.value} value={s.value} className="bg-gray-900">
+                    {s.label}
                   </option>
                 ))}
               </select>
