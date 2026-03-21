@@ -31,9 +31,9 @@ function AxisBar({
 }) {
   return (
     <div className="mb-4">
-      <div className="flex justify-between text-xs text-gray-400 mb-1">
-        <span className="font-medium">{label}</span>
-        <span>{oppositeLabel}</span>
+      <div className="flex justify-between text-xs text-gray-400 mb-1 gap-2">
+        <span className="font-medium min-w-0 truncate">{label}</span>
+        <span className="shrink-0">{oppositeLabel}</span>
       </div>
       <div className="w-full bg-white/5 rounded-full h-3 mb-2">
         <motion.div

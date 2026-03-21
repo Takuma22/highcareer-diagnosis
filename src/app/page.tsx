@@ -191,16 +191,16 @@ export default function HomePage() {
               >
                 <option value="" className="bg-gray-900">選択</option>
                 {[
-                  { label: "〜300万円", value: 250 },
-                  { label: "300万〜500万円", value: 400 },
-                  { label: "500万〜700万円", value: 600 },
-                  { label: "700万〜1,000万円", value: 850 },
-                  { label: "1,000万〜1,500万円", value: 1250 },
-                  { label: "1,500万〜2,000万円", value: 1750 },
-                  { label: "2,000万〜3,000万円", value: 2500 },
-                  { label: "3,000万〜5,000万円", value: 4000 },
-                  { label: "5,000万〜1億円", value: 7500 },
-                  { label: "1億円〜", value: 12000 },
+                  { label: "~300万", value: 250 },
+                  { label: "300~500万", value: 400 },
+                  { label: "500~700万", value: 600 },
+                  { label: "700~1000万", value: 850 },
+                  { label: "1000~1500万", value: 1250 },
+                  { label: "1500~2000万", value: 1750 },
+                  { label: "2000~3000万", value: 2500 },
+                  { label: "3000~5000万", value: 4000 },
+                  { label: "5000~1億", value: 7500 },
+                  { label: "1億~", value: 12000 },
                 ].map((s) => (
                   <option key={s.value} value={s.value} className="bg-gray-900">
                     {s.label}
