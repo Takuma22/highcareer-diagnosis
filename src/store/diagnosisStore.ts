@@ -90,7 +90,9 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
       const baseScore = weight * 10; // 10, 20, 30
 
       let delta = 0;
-      if (direction === "A_positive") {
+      if (answer.value === "neutral") {
+        delta = 0;
+      } else if (direction === "A_positive") {
         if (answer.value === "A") delta = baseScore;
         else if (answer.value === "partial_A") delta = baseScore / 2;
         else if (answer.value === "partial_B") delta = -baseScore / 2;
