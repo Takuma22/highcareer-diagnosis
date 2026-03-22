@@ -47,12 +47,12 @@ function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string 
 【診断結果】
 - タイプ: ${typeName}「${title}」
 - コンサルフィット度: ${consultingFit}%
-- 実行力: ${radarScore.execution}点
-- 戦略思考: ${radarScore.strategy}点
-- 対人力: ${radarScore.interpersonal}点
-- 専門性: ${radarScore.expertise}点
-- リーダーシップ: ${radarScore.leadership}点
-- 適応力: ${radarScore.adaptability}点
+- 実行力: ${axisPercentage.execution}点
+- 戦略思考: ${axisPercentage.strategy}点
+- 対人力: ${axisPercentage.interpersonal}点
+- 専門性: ${axisPercentage.expertise}点
+- リーダーシップ: ${axisPercentage.leadership}点
+- 適応力: ${axisPercentage.adaptability}点
 - おすすめロール: ${recommendedRoles.map((r) => `${r.title}（${r.firm}）`).join("、")}
 
 【出力形式】

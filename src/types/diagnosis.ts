@@ -1,16 +1,12 @@
-// 6軸絶対評価システム
-// 各軸 0〜100 の絶対スコア（高い = 強い）
-// 全問ポジティブ質問 → 全最低 = 全軸0近傍
+// 6軸定義
+// 1: 実行力 (Execution)
+// 2: 戦略思考 (Strategy)
+// 3: 対人力 (Interpersonal)
+// 4: 専門性 (Expertise)
+// 5: リーダーシップ (Leadership)
+// 6: 適応力 (Adaptability)
 
-export type DiagnosisAxis =
-  | "execution"      // 実行力
-  | "strategy"       // 戦略思考
-  | "interpersonal"  // 対人力
-  | "expertise"      // 専門性
-  | "leadership"     // リーダーシップ
-  | "adaptability";  // 適応力
-
-export type DiagnosisTypeName =
+export type DiagnosisType =
   | "指揮官"
   | "参謀"
   | "外交官"
@@ -20,13 +16,22 @@ export type DiagnosisTypeName =
   | "アナリスト"
   | "準備中";
 
-export interface RadarScore {
+export interface AxisScore {
   execution: number;     // 実行力 0-100
   strategy: number;      // 戦略思考 0-100
   interpersonal: number; // 対人力 0-100
   expertise: number;     // 専門性 0-100
   leadership: number;    // リーダーシップ 0-100
   adaptability: number;  // 適応力 0-100
+}
+
+export interface AxisPercentage {
+  execution: number;
+  strategy: number;
+  interpersonal: number;
+  expertise: number;
+  leadership: number;
+  adaptability: number;
 }
 
 export type QuestionCategory =
@@ -40,7 +45,8 @@ export interface Question {
   category: QuestionCategory;
   text: string;
   axisImpact: {
-    axis: DiagnosisAxis;
+    axis: 1 | 2 | 3 | 4 | 5 | 6;
+    direction: "positive";
     weight: number; // 1-3
   };
 }
@@ -72,6 +78,7 @@ export interface DiagnosisResult {
   detailedAnalysis: string;
   strengths: string[];
   challenges: string[];
+  consultingFit: number; // 0-100
   recommendedRoles: RecommendedRole[];
   salaryProjection: SalaryProjection;
   consultingAdvice: ConsultingAdvice;
