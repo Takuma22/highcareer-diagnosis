@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDiagnosisStore } from "@/store/diagnosisStore";
@@ -93,6 +93,8 @@ export default function DiagnosisPage() {
     }
   };
 
+  const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   if (!userProfile) return null;
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -103,7 +105,13 @@ export default function DiagnosisPage() {
   const handleAnswer = (value: AnswerValue) => {
     answerQuestion(currentQuestion.id, value);
     if (currentQuestionIndex < questions.length - 1) {
-      setTimeout(() => goToNextQuestion(), 350);
+      if (autoAdvanceTimer.current) {
+        clearTimeout(autoAdvanceTimer.current);
+      }
+      autoAdvanceTimer.current = setTimeout(() => {
+        goToNextQuestion();
+        autoAdvanceTimer.current = null;
+      }, 400);
     }
   };
 

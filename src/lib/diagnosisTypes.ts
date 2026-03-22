@@ -794,19 +794,21 @@ export function calculateSalaryProjection(
   const fitMultiplier = consultingFit / 100;
   const base = currentSalary;
 
-  const growth = {
-    year1: Math.round(base * (1 + 0.15 * fitMultiplier)),
-    year3: Math.round(base * (1 + 0.45 * fitMultiplier)),
-    year5: Math.round(base * (1 + 0.85 * fitMultiplier)),
-    bestCase: Math.round(base * (1 + 1.5 * fitMultiplier)),
-  };
+  // 適性が低い場合（<75%）は転職リスクとして初期年収が下がる可能性あり
+  // transitionRisk: fit=55%→0.20, fit=65%→0.10, fit=75%→0
+  const transitionRisk = Math.max(0, 0.75 - fitMultiplier);
+
+  const year1 = Math.round(base * (1 + 0.15 * fitMultiplier - 0.6 * transitionRisk));
+  const year3 = Math.round(base * (1 + 0.45 * fitMultiplier - 0.3 * transitionRisk));
+  const year5 = Math.round(base * (1 + 0.85 * fitMultiplier));
+  const bestCase = Math.round(base * (1 + 1.5 * fitMultiplier));
 
   return {
     current: base,
-    year1: Math.max(growth.year1, base + 50),
-    year3: Math.max(growth.year3, base + 150),
-    year5: Math.max(growth.year5, base + 300),
-    bestCase: Math.max(growth.bestCase, base + 500),
+    year1,
+    year3,
+    year5,
+    bestCase,
     currency: "万円" as const,
   };
 }

@@ -80,6 +80,8 @@ export default function ResultPage() {
       salaryProjection.current) *
       100
   );
+  const isLowFit = result.consultingFit < 65;
+  const hasSalaryRisk = salaryProjection.year1 < salaryProjection.current || salaryProjection.year3 < salaryProjection.current;
 
   // 回答傾向サマリー
   const totalAnswers = answers.length;
@@ -267,6 +269,36 @@ export default function ResultPage() {
           </div>
         </motion.div>
 
+        {/* Low-fit honest assessment */}
+        {isLowFit && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.28 }}
+            className="glass-card p-5 border border-amber-500/30"
+          >
+            <h2 className="text-base font-semibold text-amber-400 mb-3">フェアな評価・転職リスク</h2>
+            <div className="space-y-3 text-sm text-gray-300 leading-relaxed">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                <p className="font-medium text-amber-300 mb-1">現時点ではコンサル転職は慎重に検討すべきです</p>
+                <p>コンサル適性スコアが{result.consultingFit}%のため、即転職すると年収が下がる可能性があります。転職エージェントの「転職を勧める」トークは収益目的であることが多く、あなたの利益とは必ずしも一致しません。</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="font-medium text-white mb-1">現職に留まる選択肢も真剣に検討を</p>
+                <p>現職でのスキルアップ・年収交渉・社内異動の方が、リスクを抑えてキャリアを高められる可能性があります。6〜12ヶ月かけてスキルを積み上げてから再診断することを推奨します。</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="font-medium text-white mb-1">転職を選ぶなら最低限やること</p>
+                <ul className="space-y-1 text-xs text-gray-400 mt-1">
+                  <li>• ケース面接対策を3ヶ月以上徹底する</li>
+                  <li>• 複数ファームの一般公開ポジションで実際に書類を通過できるか確認する</li>
+                  <li>• 転職後の最初の1年は年収が下がることを前提に生活設計を立てる</li>
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Salary Projection Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -275,12 +307,21 @@ export default function ResultPage() {
           className="glass-card p-5"
         >
           <div className="flex items-start justify-between mb-4">
-            <h2 className="text-base font-semibold text-white">年収ジャンプアップ予測</h2>
+            <h2 className="text-base font-semibold text-white">
+              {hasSalaryRisk ? "転職後の年収シミュレーション" : "年収ジャンプアップ予測"}
+            </h2>
             <div className="text-right">
-              <div className="text-2xl font-black text-green-400">+{jumpRate}%</div>
+              <div className={`text-2xl font-black ${jumpRate >= 0 ? "text-green-400" : "text-amber-400"}`}>
+                {jumpRate >= 0 ? "+" : ""}{jumpRate}%
+              </div>
               <div className="text-xs text-gray-500">3年後目安</div>
             </div>
           </div>
+          {hasSalaryRisk && (
+            <div className="mb-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 text-xs text-amber-300 leading-relaxed">
+              コンサル適性スコアが低いため、転職直後は一時的な年収低下が見込まれます。現職に留まりながらスキルを積んでから転職するのが現実的です。
+            </div>
+          )}
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={salaryChartData}>
