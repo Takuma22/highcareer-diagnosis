@@ -1,6 +1,6 @@
 import { Question } from "@/types/diagnosis";
 
-// 28問、5段階リッカートスケール形式（「当てはまる/当てはまらない」で答えられる断定形）
+// 28問（各軸7問）、5段階リッカートスケール形式（「当てはまる/当てはまらない」で答えられる断定形）
 // direction: "positive" = 強く同意(5)がpositive軸方向
 // direction: "negative" = 強く同意(5)がnegative軸方向（スコア計算時に反転）
 
@@ -49,7 +49,7 @@ export const questions: Question[] = [
     axisImpact: { axis: 4, direction: "positive", weight: 2 },
   },
 
-  // ===== スキル・能力 (8問) =====
+  // ===== スキル・能力 (7問) =====
   {
     id: 8,
     category: "skill",
@@ -92,70 +92,70 @@ export const questions: Question[] = [
     text: "スケジュール管理やリスク対策など、プロジェクト全体を見渡して進める能力がある",
     axisImpact: { axis: 3, direction: "positive", weight: 3 },
   },
+
+  // ===== 適性・好み (7問) =====
   {
     id: 15,
-    category: "skill",
-    text: "新しいスキルや知識を身につけるために、自分からセミナーや勉強会に積極的に参加している",
-    axisImpact: { axis: 4, direction: "positive", weight: 1 },
-  },
-
-  // ===== 適性・好み (9問) =====
-  {
-    id: 16,
     category: "aptitude",
     text: "「どうすれば問題を解決できるか」を考えることに、強いやりがいを感じる",
     axisImpact: { axis: 1, direction: "positive", weight: 2 },
   },
   {
-    id: 17,
+    id: 16,
     category: "aptitude",
     text: "感情や雰囲気よりも、データや根拠を重視して物事を判断する",
     axisImpact: { axis: 2, direction: "positive", weight: 3 },
   },
   {
-    id: 18,
-    category: "aptitude",
-    text: "高収入・高い地位を目指して、ハードな環境でも積極的に頑張りたい",
-    axisImpact: { axis: 4, direction: "positive", weight: 3 },
-  },
-  {
-    id: 19,
+    id: 17,
     category: "aptitude",
     text: "グループの中で自然とリーダー的な役割を担うことが多い",
     axisImpact: { axis: 3, direction: "positive", weight: 3 },
   },
   {
-    id: 20,
+    id: 18,
     category: "aptitude",
     text: "何か新しいことを始めるとき、まず全体の計画を立ててから動く",
     axisImpact: { axis: 1, direction: "positive", weight: 2 },
   },
   {
-    id: 21,
+    id: 19,
     category: "aptitude",
     text: "人の気持ちや関係性を大切にしながら、周囲と協力して物事を進めることが得意だ",
     axisImpact: { axis: 2, direction: "negative", weight: 2 },
   },
   {
-    id: 22,
-    category: "aptitude",
-    text: "5年後には今よりずっと高いポジションや収入を実現していたい",
-    axisImpact: { axis: 4, direction: "positive", weight: 2 },
-  },
-  {
-    id: 23,
+    id: 20,
     category: "aptitude",
     text: "知らない分野や難しい課題でも、積極的に調べてチャレンジするのが好きだ",
     axisImpact: { axis: 1, direction: "positive", weight: 2 },
   },
   {
-    id: 24,
+    id: 21,
     category: "aptitude",
     text: "専門的なスキルを極めて、その道のプロとして認められることに価値を感じる",
     axisImpact: { axis: 3, direction: "negative", weight: 2 },
   },
 
-  // ===== マインドセット (4問) =====
+  // ===== マインドセット (7問) =====
+  {
+    id: 22,
+    category: "mindset",
+    text: "新しいスキルや知識を身につけるために、自分からセミナーや勉強会に積極的に参加している",
+    axisImpact: { axis: 4, direction: "positive", weight: 1 },
+  },
+  {
+    id: 23,
+    category: "mindset",
+    text: "高収入・高い地位を目指して、ハードな環境でも積極的に頑張りたい",
+    axisImpact: { axis: 4, direction: "positive", weight: 3 },
+  },
+  {
+    id: 24,
+    category: "mindset",
+    text: "5年後には今よりずっと高いポジションや収入を実現していたい",
+    axisImpact: { axis: 4, direction: "positive", weight: 2 },
+  },
   {
     id: 25,
     category: "mindset",
