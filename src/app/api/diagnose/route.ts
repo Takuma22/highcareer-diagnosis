@@ -73,10 +73,12 @@ function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string 
 【診断結果】
 - タイプ: ${type}「${title}」
 - コンサルフィット度: ${consultingFit}%
-- 戦略思考度: ${axisPercentage.s_percent}%
-- データ思考度: ${axisPercentage.d_percent}%
-- リーダーシップ度: ${axisPercentage.l_percent}%
-- 向上心度: ${axisPercentage.a_percent}%
+- 実行力: ${axisPercentage.execution}点
+- 戦略思考: ${axisPercentage.strategy}点
+- 対人力: ${axisPercentage.interpersonal}点
+- 専門性: ${axisPercentage.expertise}点
+- リーダーシップ: ${axisPercentage.leadership}点
+- 適応力: ${axisPercentage.adaptability}点
 - おすすめロール: ${recommendedRoles.map((r) => `${r.title}（${r.firm}）`).join("、")}
 
 【出力形式】

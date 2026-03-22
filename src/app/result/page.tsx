@@ -4,58 +4,26 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
+  Tooltip,
   AreaChart,
   Area,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 import { useDiagnosisStore } from "@/store/diagnosisStore";
 
 const LINE_URL = "https://lin.ee/XXXXXXXX";
 
-function AxisBar({
-  label,
-  oppositeLabel,
-  percent,
-  color,
-  explanation,
-}: {
-  label: string;
-  oppositeLabel: string;
-  percent: number;
-  color: string;
-  explanation: string;
-}) {
-  return (
-    <div className="mb-4">
-      <div className="flex justify-between text-xs text-gray-400 mb-1">
-        <span className="font-medium">
-          {label} <span className="text-white font-bold ml-1">{percent}%</span>
-        </span>
-        <span className="font-medium text-right">
-          <span className="text-gray-500 mr-1">{100 - percent}%</span>
-          {oppositeLabel}
-        </span>
-      </div>
-      <div className="w-full bg-white/5 rounded-full h-3">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${percent}%` }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className={`h-3 rounded-full ${color}`}
-        />
-      </div>
-      <p className="text-xs text-gray-500 leading-relaxed mt-2 mb-2">{explanation}</p>
-    </div>
-  );
-}
-
 export default function ResultPage() {
   const router = useRouter();
-  const { result, userProfile, aiInsight, reset, answers } = useDiagnosisStore();
+  const { result, userProfile, aiInsight, reset, answers, axisScore } = useDiagnosisStore();
 
   useEffect(() => {
     if (!result) {
@@ -66,6 +34,15 @@ export default function ResultPage() {
   if (!result || !userProfile) return null;
 
   const { axisPercentage, salaryProjection } = result;
+
+  const radarData = [
+    { axis: "実行力", score: axisPercentage.execution },
+    { axis: "戦略思考", score: axisPercentage.strategy },
+    { axis: "対人力", score: axisPercentage.interpersonal },
+    { axis: "専門性", score: axisPercentage.expertise },
+    { axis: "リーダーシップ", score: axisPercentage.leadership },
+    { axis: "適応力", score: axisPercentage.adaptability },
+  ];
 
   const salaryChartData = [
     { year: "現在", 年収: salaryProjection.current },
@@ -81,16 +58,26 @@ export default function ResultPage() {
       100
   );
   const isLowFit = result.consultingFit < 65;
-  const hasSalaryRisk = salaryProjection.year1 < salaryProjection.current || salaryProjection.year3 < salaryProjection.current;
+  const hasSalaryRisk = salaryProjection.year1 < salaryProjection.current;
 
-  // 回答傾向サマリー
   const totalAnswers = answers.length;
-  const avgScore = totalAnswers > 0
-    ? Math.round((answers.reduce((sum, a) => sum + a.value, 0) / totalAnswers) * 10) / 10
-    : 0;
+  const avgScore =
+    totalAnswers > 0
+      ? Math.round(
+          (answers.reduce((sum, a) => sum + a.value, 0) / totalAnswers) * 10
+        ) / 10
+      : 0;
   const highCount = answers.filter((a) => a.value >= 4).length;
-  const lowCount = answers.filter((a) => a.value <= 2).length;
   const midCount = answers.filter((a) => a.value === 3).length;
+
+  const axisLabels = [
+    { key: "execution", label: "実行力", color: "#6366f1" },
+    { key: "strategy", label: "戦略思考", color: "#3b82f6" },
+    { key: "interpersonal", label: "対人力", color: "#10b981" },
+    { key: "expertise", label: "専門性", color: "#f59e0b" },
+    { key: "leadership", label: "リーダーシップ", color: "#ec4899" },
+    { key: "adaptability", label: "適応力", color: "#8b5cf6" },
+  ];
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] relative overflow-hidden">
@@ -110,7 +97,7 @@ export default function ResultPage() {
           <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-2 mb-3">
             <span className="text-indigo-400 text-sm">診断結果</span>
           </div>
-          <div className="text-6xl font-black gradient-text mb-2">{result.type}</div>
+          <div className="text-5xl font-black gradient-text mb-2">{result.type}</div>
           <h1 className="text-2xl font-bold text-white mb-1">{result.title}</h1>
           <p className="text-gray-400 text-sm">{result.subtitle}</p>
         </motion.div>
@@ -137,63 +124,84 @@ export default function ResultPage() {
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3 text-center">
               <div className="text-2xl font-black text-indigo-300">{avgScore}</div>
-              <div className="text-xs text-gray-500 mt-1">平均スコア<br/>（5点満点）</div>
+              <div className="text-xs text-gray-500 mt-1">平均スコア<br />（5点満点）</div>
             </div>
             <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
               <div className="text-2xl font-black text-green-300">{highCount}</div>
-              <div className="text-xs text-gray-500 mt-1">強く同意<br/>（4〜5点）</div>
+              <div className="text-xs text-gray-500 mt-1">強く同意<br />（4〜5点）</div>
             </div>
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-center">
               <div className="text-2xl font-black text-amber-300">{midCount}</div>
-              <div className="text-xs text-gray-500 mt-1">どちらでもない<br/>（3点）</div>
+              <div className="text-xs text-gray-500 mt-1">どちらでもない<br />（3点）</div>
             </div>
           </div>
           <p className="text-xs text-gray-400 leading-relaxed">
-            {totalAnswers}問に回答。{highCount > totalAnswers * 0.5
+            {totalAnswers}問に回答。
+            {highCount > totalAnswers * 0.5
               ? "多くの質問に強く同意しており、自己認識が明確なタイプです。"
               : midCount > totalAnswers * 0.4
               ? "中間的な回答が多く、バランス型・柔軟な思考を持つタイプです。"
-              : "様々な方向に回答が分散しており、複数の側面を持つ複合型タイプです。"
-            }
+              : "様々な方向に回答が分散しており、複数の側面を持つ複合型タイプです。"}
           </p>
         </motion.div>
 
-        {/* Axis Bars + Explanations */}
+        {/* Radar Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="glass-card p-5"
         >
-          <h2 className="text-base font-semibold text-white mb-4">4軸スコアと意味解説</h2>
-          <AxisBar
-            label="戦略思考 (S)"
-            oppositeLabel="実行力 (E)"
-            percent={axisPercentage.s_percent}
-            color="bg-indigo-500"
-            explanation={result.axisExplanations.axis1}
-          />
-          <AxisBar
-            label="データ思考 (D)"
-            oppositeLabel="関係構築 (R)"
-            percent={axisPercentage.d_percent}
-            color="bg-blue-500"
-            explanation={result.axisExplanations.axis2}
-          />
-          <AxisBar
-            label="リーダーシップ (L)"
-            oppositeLabel="専門追求 (X)"
-            percent={axisPercentage.l_percent}
-            color="bg-purple-500"
-            explanation={result.axisExplanations.axis3}
-          />
-          <AxisBar
-            label="野心・向上心 (A)"
-            oppositeLabel="安定志向 (B)"
-            percent={axisPercentage.a_percent}
-            color="bg-amber-500"
-            explanation={result.axisExplanations.axis4}
-          />
+          <h2 className="text-base font-semibold text-white mb-4">6軸能力レーダーチャート</h2>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={radarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+                <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                <PolarAngleAxis
+                  dataKey="axis"
+                  tick={{ fill: "#9ca3af", fontSize: 12, fontWeight: 500 }}
+                />
+                <PolarRadiusAxis
+                  angle={90}
+                  domain={[0, 100]}
+                  tick={{ fill: "#6b7280", fontSize: 10 }}
+                  tickCount={6}
+                />
+                <Radar
+                  name="スコア"
+                  dataKey="score"
+                  stroke="#6366f1"
+                  fill="#6366f1"
+                  fillOpacity={0.25}
+                  strokeWidth={2}
+                  dot={{ fill: "#6366f1", r: 4, strokeWidth: 0 }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "rgba(15,15,30,0.95)",
+                    border: "1px solid rgba(99,102,241,0.4)",
+                    borderRadius: "8px",
+                    color: "#fff",
+                  }}
+                  formatter={(value: number) => [`${value}点`, "スコア"]}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* 6軸スコア一覧 */}
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            {axisLabels.map(({ key, label, color }) => {
+              const score = axisPercentage[key as keyof typeof axisPercentage];
+              return (
+                <div key={key} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                  <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: color }} />
+                  <span className="text-xs text-gray-400 flex-1">{label}</span>
+                  <span className="text-sm font-bold text-white">{score}</span>
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
 
         {/* Detailed Analysis */}
@@ -234,8 +242,7 @@ export default function ResultPage() {
                   strokeDasharray={`${2 * Math.PI * 40}`}
                   initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
                   animate={{
-                    strokeDashoffset:
-                      2 * Math.PI * 40 * (1 - result.consultingFit / 100),
+                    strokeDashoffset: 2 * Math.PI * 40 * (1 - result.consultingFit / 100),
                   }}
                   transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
                 />
@@ -247,9 +254,7 @@ export default function ResultPage() {
                 </defs>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-black gradient-text">
-                  {result.consultingFit}%
-                </span>
+                <span className="text-2xl font-black gradient-text">{result.consultingFit}%</span>
               </div>
             </div>
             <div>
@@ -290,8 +295,8 @@ export default function ResultPage() {
               <div className="bg-white/5 rounded-lg p-3">
                 <p className="font-medium text-white mb-1">転職を選ぶなら最低限やること</p>
                 <ul className="space-y-1 text-xs text-gray-400 mt-1">
-                  <li>• ケース面接対策を3ヶ月以上徹底する</li>
-                  <li>• 複数ファームの一般公開ポジションで実際に書類を通過できるか確認する</li>
+                  <li>• 低いスコアの軸を3ヶ月集中して強化する</li>
+                  <li>• 複数エージェントで実際に書類を通過できるか確認する</li>
                   <li>• 転職後の最初の1年は年収が下がることを前提に生活設計を立てる</li>
                 </ul>
               </div>
@@ -333,11 +338,7 @@ export default function ResultPage() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis dataKey="year" stroke="#6b7280" tick={{ fontSize: 11 }} />
-                <YAxis
-                  stroke="#6b7280"
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(v) => `${v}万`}
-                />
+                <YAxis stroke="#6b7280" tick={{ fontSize: 11 }} tickFormatter={(v) => `${v}万`} />
                 <Tooltip
                   contentStyle={{
                     background: "rgba(15,15,30,0.9)",
@@ -516,9 +517,7 @@ export default function ResultPage() {
         >
           <div className="text-4xl mb-3">🎁</div>
           <h2 className="text-xl font-bold text-white mb-2">LINE限定特典</h2>
-          <p className="text-gray-300 text-sm mb-4">
-            {result.lineCtaMessage}
-          </p>
+          <p className="text-gray-300 text-sm mb-4">{result.lineCtaMessage}</p>
           <div className="space-y-2 mb-4 text-left">
             {[
               "コンサル転職攻略ガイド（非公開）",

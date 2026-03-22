@@ -1,28 +1,37 @@
-// 4軸の定義
-// 軸1: S (Strategic) vs E (Execution) - 戦略思考 vs 実行力
-// 軸2: D (Data) vs R (Relation) - データ・論理 vs 人間関係・感情
-// 軸3: L (Leadership) vs X (Specialist) - リーダーシップ vs 専門性
-// 軸4: A (Ambition) vs B (Balance/Stability) - 野心・変化志向 vs 安定志向
+// 6軸定義
+// 1: 実行力 (Execution)
+// 2: 戦略思考 (Strategy)
+// 3: 対人力 (Interpersonal)
+// 4: 専門性 (Expertise)
+// 5: リーダーシップ (Leadership)
+// 6: 適応力 (Adaptability)
 
-export type Axis1 = "S" | "E"; // Strategic vs Execution
-export type Axis2 = "D" | "R"; // Data vs Relation
-export type Axis3 = "L" | "X"; // Leadership vs eXpert(Specialist)
-export type Axis4 = "A" | "B"; // Ambition vs Balance(Stability)
-
-export type DiagnosisType = `${Axis1}${Axis2}${Axis3}${Axis4}`;
+export type DiagnosisType =
+  | "指揮官"
+  | "参謀"
+  | "外交官"
+  | "スペシャリスト"
+  | "オールラウンダー"
+  | "チャレンジャー"
+  | "アナリスト"
+  | "準備中";
 
 export interface AxisScore {
-  axis1: number; // -100(E) ~ +100(S)
-  axis2: number; // -100(R) ~ +100(D)
-  axis3: number; // -100(X) ~ +100(L)
-  axis4: number; // -100(B) ~ +100(A)
+  execution: number;     // 実行力 0-100
+  strategy: number;      // 戦略思考 0-100
+  interpersonal: number; // 対人力 0-100
+  expertise: number;     // 専門性 0-100
+  leadership: number;    // リーダーシップ 0-100
+  adaptability: number;  // 適応力 0-100
 }
 
 export interface AxisPercentage {
-  s_percent: number; // Strategic %
-  d_percent: number; // Data %
-  l_percent: number; // Leadership %
-  a_percent: number; // Ambition %
+  execution: number;
+  strategy: number;
+  interpersonal: number;
+  expertise: number;
+  leadership: number;
+  adaptability: number;
 }
 
 export type QuestionCategory =
@@ -34,15 +43,15 @@ export type QuestionCategory =
 export interface Question {
   id: number;
   category: QuestionCategory;
-  text: string; // 「〜だと思う」形式
+  text: string;
   axisImpact: {
-    axis: 1 | 2 | 3 | 4;
-    direction: "positive" | "negative"; // positive = 同意(5)がpositive方向
+    axis: 1 | 2 | 3 | 4 | 5 | 6;
+    direction: "positive";
     weight: number; // 1-3
   };
 }
 
-// 5段階リッカートスケール: 1=まったくそう思わない 〜 5=とてもそう思う
+// 5段階リッカートスケール
 export type AnswerValue = 1 | 2 | 3 | 4 | 5;
 
 export interface Answer {
@@ -65,22 +74,14 @@ export interface DiagnosisResult {
   title: string;
   subtitle: string;
   description: string;
-  detailedAnalysis: string; // 500-800文字の詳細分析
-  axisExplanations: AxisExplanations; // 各軸の意味説明
+  detailedAnalysis: string;
   strengths: string[];
   challenges: string[];
-  consultingFit: number; // 0-100%
+  consultingFit: number; // 0-100
   recommendedRoles: RecommendedRole[];
   salaryProjection: SalaryProjection;
   consultingAdvice: ConsultingAdvice;
   lineCtaMessage: string;
-}
-
-export interface AxisExplanations {
-  axis1: string;
-  axis2: string;
-  axis3: string;
-  axis4: string;
 }
 
 export interface RecommendedRole {

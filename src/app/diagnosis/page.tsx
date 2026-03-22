@@ -150,7 +150,7 @@ export default function DiagnosisPage() {
               animate={{ opacity: [0, 1, 0] }}
               transition={{ duration: 2, repeat: Infinity, delay: 0.8 }}
             >
-              16タイプを照合中...
+              8タイプを照合中...
             </motion.p>
             <motion.p
               animate={{ opacity: [0, 1, 0] }}

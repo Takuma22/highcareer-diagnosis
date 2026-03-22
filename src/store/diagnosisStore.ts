@@ -16,7 +16,6 @@ import {
 } from "@/lib/diagnosisTypes";
 
 interface DiagnosisStore extends DiagnosisState {
-  // Actions
   setUserProfile: (profile: UserProfile) => void;
   answerQuestion: (questionId: number, value: AnswerValue) => void;
   goToStep: (step: DiagnosisState["step"]) => void;
@@ -33,7 +32,14 @@ const initialState: DiagnosisState & { currentQuestionIndex: number } = {
   step: "profile",
   userProfile: null,
   answers: [],
-  axisScore: { axis1: 0, axis2: 0, axis3: 0, axis4: 0 },
+  axisScore: {
+    execution: 0,
+    strategy: 0,
+    interpersonal: 0,
+    expertise: 0,
+    leadership: 0,
+    adaptability: 0,
+  },
   result: null,
   aiInsight: null,
   currentQuestionIndex: 0,
@@ -79,42 +85,37 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
   calculateResult: () => {
     const { answers, userProfile } = get();
 
-    // 5段階リッカートスケールのスコア計算
-    // value 1-5 → delta: 1=-base, 2=-base/2, 3=0, 4=+base/2, 5=+base
-    const axisScore: AxisScore = { axis1: 0, axis2: 0, axis3: 0, axis4: 0 };
+    // 軸ごとに回答を集計し、絶対スコア(0-100)を算出
+    // score = sum(value * weight) / sum(5 * weight) * 100
+    const axisBuckets: Record<number, { value: number; weight: number }[]> = {
+      1: [], 2: [], 3: [], 4: [], 5: [], 6: [],
+    };
 
     answers.forEach((answer) => {
       const question = questions.find((q) => q.id === answer.questionId);
       if (!question) return;
-
-      const { axis, direction, weight } = question.axisImpact;
-      const baseScore = weight * 20; // 20, 40, 60
-
-      // 1→-base, 2→-base/2, 3→0, 4→+base/2, 5→+base
-      const normalized = answer.value - 3; // -2, -1, 0, 1, 2
-      const rawDelta = (normalized / 2) * baseScore;
-
-      // direction: positive = そのまま、negative = 反転
-      const delta = direction === "positive" ? rawDelta : -rawDelta;
-
-      const axisKey = `axis${axis}` as keyof AxisScore;
-      axisScore[axisKey] = Math.max(-100, Math.min(100, axisScore[axisKey] + delta));
+      const { axis, weight } = question.axisImpact;
+      axisBuckets[axis].push({ value: answer.value, weight });
     });
 
-    const diagnosisType = getDiagnosisType(
-      axisScore.axis1,
-      axisScore.axis2,
-      axisScore.axis3,
-      axisScore.axis4
-    );
+    const toScore = (bucket: { value: number; weight: number }[]) => {
+      if (bucket.length === 0) return 0;
+      const sum = bucket.reduce((acc, { value, weight }) => acc + value * weight, 0);
+      const maxPossible = bucket.reduce((acc, { weight }) => acc + 5 * weight, 0);
+      return Math.round((sum / maxPossible) * 100);
+    };
 
-    const axisPercentage = calculateAxisPercentage(
-      axisScore.axis1,
-      axisScore.axis2,
-      axisScore.axis3,
-      axisScore.axis4
-    );
+    const axisScore: AxisScore = {
+      execution: toScore(axisBuckets[1]),
+      strategy: toScore(axisBuckets[2]),
+      interpersonal: toScore(axisBuckets[3]),
+      expertise: toScore(axisBuckets[4]),
+      leadership: toScore(axisBuckets[5]),
+      adaptability: toScore(axisBuckets[6]),
+    };
 
+    const diagnosisType = getDiagnosisType(axisScore);
+    const axisPercentage = calculateAxisPercentage(axisScore);
     const typeData = diagnosisTypeData[diagnosisType];
     const salaryProjection = calculateSalaryProjection(
       userProfile?.currentSalary ?? 500,
