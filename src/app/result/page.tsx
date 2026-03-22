@@ -32,8 +32,13 @@ function AxisBar({
   return (
     <div className="mb-4">
       <div className="flex justify-between text-xs text-gray-400 mb-1">
-        <span className="font-medium">{label}</span>
-        <span className="font-medium">{oppositeLabel}</span>
+        <span className="font-medium">
+          {label} <span className="text-white font-bold ml-1">{percent}%</span>
+        </span>
+        <span className="font-medium text-right">
+          <span className="text-gray-500 mr-1">{100 - percent}%</span>
+          {oppositeLabel}
+        </span>
       </div>
       <div className="w-full bg-white/5 rounded-full h-3">
         <motion.div
@@ -43,11 +48,7 @@ function AxisBar({
           className={`h-3 rounded-full ${color}`}
         />
       </div>
-      <div className="flex justify-between text-xs mt-1 mb-2">
-        <span className="text-white font-bold">{percent}%</span>
-        <span className="text-gray-500">{100 - percent}%</span>
-      </div>
-      <p className="text-xs text-gray-500 leading-relaxed">{explanation}</p>
+      <p className="text-xs text-gray-500 leading-relaxed mt-2 mb-2">{explanation}</p>
     </div>
   );
 }

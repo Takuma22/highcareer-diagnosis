@@ -22,11 +22,11 @@ const categoryColors: Record<string, string> = {
 };
 
 const likertOptions: { value: AnswerValue; label: string; shortLabel: string }[] = [
-  { value: 5, label: "とても当てはまる", shortLabel: "当てはまる" },
+  { value: 5, label: "とても当てはまる", shortLabel: "とても当てはまる" },
   { value: 4, label: "どちらかといえば当てはまる", shortLabel: "やや当てはまる" },
-  { value: 3, label: "どちらとも言えない", shortLabel: "中間" },
-  { value: 2, label: "どちらかといえば当てはまらない", shortLabel: "やや違う" },
-  { value: 1, label: "全く当てはまらない", shortLabel: "当てはまらない" },
+  { value: 3, label: "どちらとも言えない", shortLabel: "どちらとも言えない" },
+  { value: 2, label: "どちらかといえば当てはまらない", shortLabel: "やや当てはまらない" },
+  { value: 1, label: "全く当てはまらない", shortLabel: "全く当てはまらない" },
 ];
 
 const likertColors: Record<number, string> = {
