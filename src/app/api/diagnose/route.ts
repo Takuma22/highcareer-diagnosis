@@ -12,10 +12,7 @@ export async function POST(request: NextRequest) {
     const { userProfile, result }: { userProfile: UserProfile; result: DiagnosisResult } = body;
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json(
-        { error: "API key not configured" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "API key not configured" }, { status: 500 });
     }
 
     const prompt = buildPrompt(userProfile, result);
@@ -23,43 +20,20 @@ export async function POST(request: NextRequest) {
     const message = await client.messages.create({
       model: "claude-opus-4-6",
       max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
     });
 
-    const insight =
-      message.content[0].type === "text" ? message.content[0].text : "";
-
+    const insight = message.content[0].type === "text" ? message.content[0].text : "";
     return NextResponse.json({ insight });
   } catch (error) {
     console.error("AI診断エラー:", error);
-    return NextResponse.json(
-      { error: "診断処理中にエラーが発生しました" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "診断処理中にエラーが発生しました" }, { status: 500 });
   }
 }
 
 function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string {
-  const {
-    currentRole,
-    yearsOfExperience,
-    currentSalary,
-    industry,
-    skills,
-  } = userProfile;
-
-  const {
-    type,
-    title,
-    consultingFit,
-    axisPercentage,
-    recommendedRoles,
-  } = result;
+  const { currentRole, yearsOfExperience, currentSalary, industry, skills } = userProfile;
+  const { typeName, title, consultingFit, radarScore, recommendedRoles } = result;
 
   return `あなたはトップクラスのコンサルティング業界専門のキャリアアドバイザーです。
 以下のユーザーの情報と診断結果をもとに、パーソナライズされた転職アドバイスを200〜300字で日本語で提供してください。
@@ -71,12 +45,14 @@ function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string 
 - 保有スキル: ${skills.join("、")}
 
 【診断結果】
-- タイプ: ${type}「${title}」
+- タイプ: ${typeName}「${title}」
 - コンサルフィット度: ${consultingFit}%
-- 戦略思考度: ${axisPercentage.s_percent}%
-- データ思考度: ${axisPercentage.d_percent}%
-- リーダーシップ度: ${axisPercentage.l_percent}%
-- 向上心度: ${axisPercentage.a_percent}%
+- 実行力: ${radarScore.execution}点
+- 戦略思考: ${radarScore.strategy}点
+- 対人力: ${radarScore.interpersonal}点
+- 専門性: ${radarScore.expertise}点
+- リーダーシップ: ${radarScore.leadership}点
+- 適応力: ${radarScore.adaptability}点
 - おすすめロール: ${recommendedRoles.map((r) => `${r.title}（${r.firm}）`).join("、")}
 
 【出力形式】

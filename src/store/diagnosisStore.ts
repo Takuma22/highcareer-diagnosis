@@ -5,18 +5,18 @@ import {
   AnswerValue,
   UserProfile,
   DiagnosisResult,
-  AxisScore,
+  RadarScore,
+  DiagnosisAxis,
 } from "@/types/diagnosis";
 import { questions } from "@/lib/questions";
 import {
-  getDiagnosisType,
-  calculateAxisPercentage,
+  getDiagnosisTypeName,
+  calculateConsultingFit,
   calculateSalaryProjection,
   diagnosisTypeData,
 } from "@/lib/diagnosisTypes";
 
 interface DiagnosisStore extends DiagnosisState {
-  // Actions
   setUserProfile: (profile: UserProfile) => void;
   answerQuestion: (questionId: number, value: AnswerValue) => void;
   goToStep: (step: DiagnosisState["step"]) => void;
@@ -29,11 +29,20 @@ interface DiagnosisStore extends DiagnosisState {
   goToPreviousQuestion: () => void;
 }
 
+const initialRadarScore: RadarScore = {
+  execution: 0,
+  strategy: 0,
+  interpersonal: 0,
+  expertise: 0,
+  leadership: 0,
+  adaptability: 0,
+};
+
 const initialState: DiagnosisState & { currentQuestionIndex: number } = {
   step: "profile",
   userProfile: null,
   answers: [],
-  axisScore: { axis1: 0, axis2: 0, axis3: 0, axis4: 0 },
+  radarScore: initialRadarScore,
   result: null,
   aiInsight: null,
   currentQuestionIndex: 0,
@@ -50,7 +59,6 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
     const { answers } = get();
     const existing = answers.findIndex((a) => a.questionId === questionId);
     const newAnswer: Answer = { questionId, value };
-
     if (existing >= 0) {
       const updated = [...answers];
       updated[existing] = newAnswer;
@@ -79,56 +87,62 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
   calculateResult: () => {
     const { answers, userProfile } = get();
 
-    // 5段階リッカートスケールのスコア計算
-    // value 1-5 → delta: 1=-base, 2=-base/2, 3=0, 4=+base/2, 5=+base
-    const axisScore: AxisScore = { axis1: 0, axis2: 0, axis3: 0, axis4: 0 };
+    // 6軸ごとの重み付き合計とMAX合計を計算
+    const axisSums: Record<DiagnosisAxis, { weightedSum: number; maxSum: number }> = {
+      execution:    { weightedSum: 0, maxSum: 0 },
+      strategy:     { weightedSum: 0, maxSum: 0 },
+      interpersonal:{ weightedSum: 0, maxSum: 0 },
+      expertise:    { weightedSum: 0, maxSum: 0 },
+      leadership:   { weightedSum: 0, maxSum: 0 },
+      adaptability: { weightedSum: 0, maxSum: 0 },
+    };
 
-    answers.forEach((answer) => {
-      const question = questions.find((q) => q.id === answer.questionId);
-      if (!question) return;
-
-      const { axis, direction, weight } = question.axisImpact;
-      const baseScore = weight * 20; // 20, 40, 60
-
-      // 1→-base, 2→-base/2, 3→0, 4→+base/2, 5→+base
-      const normalized = answer.value - 3; // -2, -1, 0, 1, 2
-      const rawDelta = (normalized / 2) * baseScore;
-
-      // direction: positive = そのまま、negative = 反転
-      const delta = direction === "positive" ? rawDelta : -rawDelta;
-
-      const axisKey = `axis${axis}` as keyof AxisScore;
-      axisScore[axisKey] = Math.max(-100, Math.min(100, axisScore[axisKey] + delta));
+    // 全質問のmax合計を事前計算（未回答の質問は中間値3で補完）
+    questions.forEach((q) => {
+      const answer = answers.find((a) => a.questionId === q.id);
+      const value = answer ? answer.value : 3; // 未回答は中間値
+      const { axis, weight } = q.axisImpact;
+      axisSums[axis].weightedSum += value * weight;
+      axisSums[axis].maxSum += 5 * weight;
     });
 
-    const diagnosisType = getDiagnosisType(
-      axisScore.axis1,
-      axisScore.axis2,
-      axisScore.axis3,
-      axisScore.axis4
-    );
+    // 各軸スコアを 0〜100 に正規化
+    // min = 1*weight_sum, max = 5*weight_sum
+    const radarScore: RadarScore = {
+      execution: 0,
+      strategy: 0,
+      interpersonal: 0,
+      expertise: 0,
+      leadership: 0,
+      adaptability: 0,
+    };
 
-    const axisPercentage = calculateAxisPercentage(
-      axisScore.axis1,
-      axisScore.axis2,
-      axisScore.axis3,
-      axisScore.axis4
-    );
+    (Object.keys(axisSums) as DiagnosisAxis[]).forEach((axis) => {
+      const { weightedSum, maxSum } = axisSums[axis];
+      const minSum = maxSum / 5; // 1 * weight_sum
+      if (maxSum === minSum) {
+        radarScore[axis] = 50;
+      } else {
+        radarScore[axis] = Math.round(((weightedSum - minSum) / (maxSum - minSum)) * 100);
+      }
+    });
 
-    const typeData = diagnosisTypeData[diagnosisType];
+    const typeName = getDiagnosisTypeName(radarScore);
+    const consultingFit = calculateConsultingFit(radarScore);
+    const typeData = diagnosisTypeData[typeName];
     const salaryProjection = calculateSalaryProjection(
       userProfile?.currentSalary ?? 500,
-      diagnosisType,
-      typeData.consultingFit
+      consultingFit
     );
 
     const result: DiagnosisResult = {
       ...typeData,
-      axisPercentage,
+      radarScore,
+      consultingFit,
       salaryProjection,
     };
 
-    set({ axisScore, result, step: "loading" });
+    set({ radarScore, result, step: "loading" });
   },
 
   setAIInsight: (insight) => set({ aiInsight: insight }),
