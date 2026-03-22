@@ -31,17 +31,21 @@ function AxisBar({
 }) {
   return (
     <div className="mb-4">
-      <div className="flex justify-between text-xs text-gray-400 mb-1 gap-2">
-        <span className="font-medium min-w-0 truncate">{label}</span>
-        <span className="shrink-0">{oppositeLabel}</span>
+      <div className="flex justify-between text-xs text-gray-400 mb-1">
+        <span className="font-medium">{label}</span>
+        <span className="font-medium">{oppositeLabel}</span>
       </div>
-      <div className="w-full bg-white/5 rounded-full h-3 mb-2">
+      <div className="w-full bg-white/5 rounded-full h-3">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 1, ease: "easeOut" }}
           className={`h-3 rounded-full ${color}`}
         />
+      </div>
+      <div className="flex justify-between text-xs mt-1 mb-2">
+        <span className="text-white font-bold">{percent}%</span>
+        <span className="text-gray-500">{100 - percent}%</span>
       </div>
       <p className="text-xs text-gray-500 leading-relaxed">{explanation}</p>
     </div>
@@ -160,29 +164,29 @@ export default function ResultPage() {
         >
           <h2 className="text-base font-semibold text-white mb-4">4軸スコアと意味解説</h2>
           <AxisBar
-            label={`戦略思考 (S) ${axisPercentage.s_percent}%`}
-            oppositeLabel={`実行力 (E) ${100 - axisPercentage.s_percent}%`}
+            label="戦略思考 (S)"
+            oppositeLabel="実行力 (E)"
             percent={axisPercentage.s_percent}
             color="bg-indigo-500"
             explanation={result.axisExplanations.axis1}
           />
           <AxisBar
-            label={`データ思考 (D) ${axisPercentage.d_percent}%`}
-            oppositeLabel={`関係構築 (R) ${100 - axisPercentage.d_percent}%`}
+            label="データ思考 (D)"
+            oppositeLabel="関係構築 (R)"
             percent={axisPercentage.d_percent}
             color="bg-blue-500"
             explanation={result.axisExplanations.axis2}
           />
           <AxisBar
-            label={`リーダーシップ (L) ${axisPercentage.l_percent}%`}
-            oppositeLabel={`専門追求 (X) ${100 - axisPercentage.l_percent}%`}
+            label="リーダーシップ (L)"
+            oppositeLabel="専門追求 (X)"
             percent={axisPercentage.l_percent}
             color="bg-purple-500"
             explanation={result.axisExplanations.axis3}
           />
           <AxisBar
-            label={`野心・向上心 (A) ${axisPercentage.a_percent}%`}
-            oppositeLabel={`安定志向 (B) ${100 - axisPercentage.a_percent}%`}
+            label="野心・向上心 (A)"
+            oppositeLabel="安定志向 (B)"
             percent={axisPercentage.a_percent}
             color="bg-amber-500"
             explanation={result.axisExplanations.axis4}

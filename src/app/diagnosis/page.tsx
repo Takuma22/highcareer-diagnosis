@@ -22,11 +22,11 @@ const categoryColors: Record<string, string> = {
 };
 
 const likertOptions: { value: AnswerValue; label: string; shortLabel: string }[] = [
-  { value: 1, label: "全く当てはまらない", shortLabel: "当てはまらない" },
-  { value: 2, label: "どちらかといえば当てはまらない", shortLabel: "やや違う" },
-  { value: 3, label: "どちらとも言えない", shortLabel: "中間" },
-  { value: 4, label: "どちらかといえば当てはまる", shortLabel: "やや当てはまる" },
   { value: 5, label: "とても当てはまる", shortLabel: "当てはまる" },
+  { value: 4, label: "どちらかといえば当てはまる", shortLabel: "やや当てはまる" },
+  { value: 3, label: "どちらとも言えない", shortLabel: "中間" },
+  { value: 2, label: "どちらかといえば当てはまらない", shortLabel: "やや違う" },
+  { value: 1, label: "全く当てはまらない", shortLabel: "当てはまらない" },
 ];
 
 const likertColors: Record<number, string> = {
@@ -236,8 +236,8 @@ export default function DiagnosisPage() {
             </div>
             {/* Desktop: ラベル */}
             <div className="hidden sm:flex justify-between text-xs text-gray-500 mb-4 px-1">
-              <span>全く当てはまらない</span>
               <span>とても当てはまる</span>
+              <span>全く当てはまらない</span>
             </div>
 
             {/* Mobile: 縦並び5ボタン */}
