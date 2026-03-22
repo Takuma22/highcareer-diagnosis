@@ -1,8 +1,9 @@
 import { Question } from "@/types/diagnosis";
 
 // 28問（各軸7問）、5段階リッカートスケール形式（「当てはまる/当てはまらない」で答えられる断定形）
-// direction: "positive" = 強く同意(5)がpositive軸方向
-// direction: "negative" = 強く同意(5)がnegative軸方向（スコア計算時に反転）
+// direction: 全問 "positive" = 「とても当てはまる(5)」が高スコア = 良い結果
+// 低いスコア = 弱い = 改善が必要、という一方向設計（MBTIと異なりコンサル適性診断のため）
+// 全問「全く当てはまらない」→ 全軸最低スコア → ERXB（最低適性タイプ）
 
 export const questions: Question[] = [
   // ===== 経験・実績 (7問) =====
@@ -77,8 +78,8 @@ export const questions: Question[] = [
   {
     id: 12,
     category: "skill",
-    text: "自分の専門分野や得意領域では、周囲よりも深い知識や技術を持っている",
-    axisImpact: { axis: 3, direction: "negative", weight: 2 },
+    text: "部下や後輩の仕事を適切に割り振り、進捗を管理・サポートしながらチームの成果を出せる",
+    axisImpact: { axis: 3, direction: "positive", weight: 2 },
   },
   {
     id: 13,
@@ -121,8 +122,8 @@ export const questions: Question[] = [
   {
     id: 19,
     category: "aptitude",
-    text: "人の気持ちや関係性を大切にしながら、周囲と協力して物事を進めることが得意だ",
-    axisImpact: { axis: 2, direction: "negative", weight: 2 },
+    text: "直感や経験則だけでなく、データや数値を根拠に戦略・意思決定を行う習慣がある",
+    axisImpact: { axis: 2, direction: "positive", weight: 2 },
   },
   {
     id: 20,
@@ -133,8 +134,8 @@ export const questions: Question[] = [
   {
     id: 21,
     category: "aptitude",
-    text: "専門的なスキルを極めて、その道のプロとして認められることに価値を感じる",
-    axisImpact: { axis: 3, direction: "negative", weight: 2 },
+    text: "チームをまとめ、方向性を定めてメンバーを引っ張るリーダーの役割にやりがいを感じる",
+    axisImpact: { axis: 3, direction: "positive", weight: 2 },
   },
 
   // ===== マインドセット (7問) =====
