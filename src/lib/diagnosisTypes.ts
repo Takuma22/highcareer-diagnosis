@@ -565,6 +565,7 @@ export function calculateAxisPercentage(score: AxisScore): AxisPercentage {
 
 export function calculateSalaryProjection(
   currentSalary: number,
+  diagnosisType: DiagnosisType,
   consultingFit: number
 ): SalaryProjection {
   const fitRatio = consultingFit / 100;

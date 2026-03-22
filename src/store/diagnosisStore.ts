@@ -5,13 +5,12 @@ import {
   AnswerValue,
   UserProfile,
   DiagnosisResult,
-  RadarScore,
-  DiagnosisAxis,
+  AxisScore,
 } from "@/types/diagnosis";
 import { questions } from "@/lib/questions";
 import {
-  getDiagnosisTypeName,
-  calculateConsultingFit,
+  getDiagnosisType,
+  calculateAxisPercentage,
   calculateSalaryProjection,
   diagnosisTypeData,
 } from "@/lib/diagnosisTypes";
@@ -28,15 +27,6 @@ interface DiagnosisStore extends DiagnosisState {
   goToNextQuestion: () => void;
   goToPreviousQuestion: () => void;
 }
-
-const initialRadarScore: RadarScore = {
-  execution: 0,
-  strategy: 0,
-  interpersonal: 0,
-  expertise: 0,
-  leadership: 0,
-  adaptability: 0,
-};
 
 const initialState: DiagnosisState & { currentQuestionIndex: number } = {
   step: "profile",
@@ -66,6 +56,7 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
     const { answers } = get();
     const existing = answers.findIndex((a) => a.questionId === questionId);
     const newAnswer: Answer = { questionId, value };
+
     if (existing >= 0) {
       const updated = [...answers];
       updated[existing] = newAnswer;
@@ -128,17 +119,17 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
     const typeData = diagnosisTypeData[diagnosisType];
     const salaryProjection = calculateSalaryProjection(
       userProfile?.currentSalary ?? 500,
-      consultingFit
+      diagnosisType,
+      typeData.consultingFit
     );
 
     const result: DiagnosisResult = {
       ...typeData,
-      radarScore,
-      consultingFit,
+      axisPercentage,
       salaryProjection,
     };
 
-    set({ radarScore, result, step: "loading" });
+    set({ axisScore, result, step: "loading" });
   },
 
   setAIInsight: (insight) => set({ aiInsight: insight }),

@@ -33,27 +33,7 @@ export default function ResultPage() {
 
   if (!result || !userProfile) return null;
 
-  const { radarScore, salaryProjection, consultingFit } = result;
-
-  // レーダーチャートデータ
-  const radarData = [
-    { axis: "実行力",         score: radarScore.execution },
-    { axis: "戦略思考",       score: radarScore.strategy },
-    { axis: "対人力",         score: radarScore.interpersonal },
-    { axis: "専門性",         score: radarScore.expertise },
-    { axis: "リーダーシップ", score: radarScore.leadership },
-    { axis: "適応力",         score: radarScore.adaptability },
-  ];
-
-  // 軸ごとの説明
-  const axisDescriptions: Record<string, { label: string; detail: string }> = {
-    execution:     { label: "実行力",         detail: "行動力・推進力・決断力。目標に向けてスピーディに動き、やり切る力。" },
-    strategy:      { label: "戦略思考",       detail: "論理的思考・分析力・計画力。問題の本質を捉え、最適解を構造化する力。" },
-    interpersonal: { label: "対人力",         detail: "コミュニケーション・交渉力・チームワーク。人を動かし、信頼を築く力。" },
-    expertise:     { label: "専門性",         detail: "専門知識の深さ・学習意欲。特定領域での深い知識と継続的な成長力。" },
-    leadership:    { label: "リーダーシップ", detail: "統率力・マネジメント・育成力。チームを束ね、組織全体の成果を最大化する力。" },
-    adaptability:  { label: "適応力",         detail: "変化対応・ストレス耐性・柔軟性。不確実な環境でも冷静に最適行動をとる力。" },
-  };
+  const { axisPercentage, salaryProjection } = result;
 
   const radarData = [
     { axis: "実行力", score: axisPercentage.execution },
@@ -73,7 +53,9 @@ export default function ResultPage() {
   ];
 
   const jumpRate = Math.round(
-    ((salaryProjection.year3 - salaryProjection.current) / salaryProjection.current) * 100
+    ((salaryProjection.year3 - salaryProjection.current) /
+      salaryProjection.current) *
+      100
   );
   const isLowFit = result.consultingFit < 65;
   const hasSalaryRisk = salaryProjection.year1 < salaryProjection.current;
@@ -106,14 +88,13 @@ export default function ResultPage() {
       </div>
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-10 space-y-6">
-
-        {/* Type Header */}
+        {/* Type Badge */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-2 mb-4">
+          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-2 mb-3">
             <span className="text-indigo-400 text-sm">診断結果</span>
           </div>
           <div className="text-5xl font-black gradient-text mb-2">{result.type}</div>
@@ -125,137 +106,18 @@ export default function ResultPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08 }}
+          transition={{ delay: 0.1 }}
           className="glass-card p-5"
         >
           <h2 className="text-base font-semibold text-white mb-2">タイプ概要</h2>
           <p className="text-gray-300 leading-relaxed text-sm">{result.description}</p>
         </motion.div>
 
-        {/* Radar Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-4">6軸能力レーダーチャート</h2>
-          <div className="flex justify-center">
-            <ResponsiveContainer width="100%" height={280}>
-              <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-                <PolarGrid stroke="rgba(255,255,255,0.08)" />
-                <PolarAngleAxis
-                  dataKey="axis"
-                  tick={{ fill: "#9ca3af", fontSize: 11, fontWeight: 500 }}
-                />
-                <Radar
-                  name="スコア"
-                  dataKey="score"
-                  stroke="#6366f1"
-                  fill="#6366f1"
-                  fillOpacity={0.35}
-                  strokeWidth={2}
-                  dot={{ fill: "#6366f1", r: 3 }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: "rgba(15,15,30,0.95)",
-                    border: "1px solid rgba(99,102,241,0.4)",
-                    borderRadius: "8px",
-                    color: "#fff",
-                    fontSize: "12px",
-                  }}
-                  formatter={(value) => [`${value}点`, "スコア"]}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* 軸スコア一覧 */}
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {(Object.entries(axisDescriptions) as [string, { label: string; detail: string }][]).map(
-              ([key, { label }]) => {
-                const score = radarScore[key as keyof typeof radarScore];
-                const color =
-                  score >= 70
-                    ? "text-green-400"
-                    : score >= 50
-                    ? "text-indigo-400"
-                    : score >= 35
-                    ? "text-amber-400"
-                    : "text-red-400";
-                const barColor =
-                  score >= 70
-                    ? "bg-green-500"
-                    : score >= 50
-                    ? "bg-indigo-500"
-                    : score >= 35
-                    ? "bg-amber-500"
-                    : "bg-red-500";
-                return (
-                  <div key={key} className="bg-white/5 rounded-lg p-2.5">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-gray-400">{label}</span>
-                      <span className={`text-sm font-bold ${color}`}>{score}</span>
-                    </div>
-                    <div className="w-full bg-white/10 rounded-full h-1.5">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${score}%` }}
-                        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                        className={`h-1.5 rounded-full ${barColor}`}
-                      />
-                    </div>
-                  </div>
-                );
-              }
-            )}
-          </div>
-        </motion.div>
-
-        {/* 軸ごとの意味解説 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-3">6軸の意味と解説</h2>
-          <div className="space-y-2">
-            {(Object.entries(axisDescriptions) as [string, { label: string; detail: string }][]).map(
-              ([key, { label, detail }]) => {
-                const score = radarScore[key as keyof typeof radarScore];
-                const level =
-                  score >= 70 ? "高い" : score >= 50 ? "平均的" : score >= 35 ? "低め" : "要強化";
-                const levelColor =
-                  score >= 70
-                    ? "text-green-400"
-                    : score >= 50
-                    ? "text-indigo-400"
-                    : score >= 35
-                    ? "text-amber-400"
-                    : "text-red-400";
-                return (
-                  <div key={key} className="flex gap-3 items-start py-1.5 border-b border-white/5 last:border-0">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-xs font-medium text-white">{label}</span>
-                        <span className={`text-xs font-bold ${levelColor}`}>{score}点 ({level})</span>
-                      </div>
-                      <p className="text-xs text-gray-500 leading-relaxed">{detail}</p>
-                    </div>
-                  </div>
-                );
-              }
-            )}
-          </div>
-        </motion.div>
-
         {/* 回答傾向サマリー */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.22 }}
+          transition={{ delay: 0.15 }}
           className="glass-card p-5"
         >
           <h2 className="text-base font-semibold text-white mb-3">回答傾向サマリー</h2>
@@ -321,7 +183,7 @@ export default function ResultPage() {
                     borderRadius: "8px",
                     color: "#fff",
                   }}
-                  formatter={(value: number) => [`${value}点`, "スコア"]}
+                  formatter={(value) => [`${value}点`, "スコア"]}
                 />
               </RadarChart>
             </ResponsiveContainer>
@@ -346,13 +208,13 @@ export default function ResultPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
+          transition={{ delay: 0.22 }}
           className="glass-card p-5"
         >
           <h2 className="text-base font-semibold text-white mb-3">詳細な性格分析</h2>
           <div className="text-gray-300 text-sm leading-relaxed space-y-3">
-            {result.detailedAnalysis.split("\n\n").map((p, i) => (
-              <p key={i}>{p}</p>
+            {result.detailedAnalysis.split("\n\n").map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
             ))}
           </div>
         </motion.div>
@@ -361,7 +223,7 @@ export default function ResultPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.27 }}
+          transition={{ delay: 0.25 }}
           className="glass-card p-5"
         >
           <h2 className="text-base font-semibold text-white mb-3">コンサルフィット度</h2>
@@ -374,7 +236,7 @@ export default function ResultPage() {
                   cy="50"
                   r="40"
                   fill="none"
-                  stroke="url(#fitGrad)"
+                  stroke="url(#grad)"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={`${2 * Math.PI * 40}`}
@@ -385,7 +247,7 @@ export default function ResultPage() {
                   transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
                 />
                 <defs>
-                  <linearGradient id="fitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#6366f1" />
                     <stop offset="100%" stopColor="#ec4899" />
                   </linearGradient>
@@ -397,28 +259,34 @@ export default function ResultPage() {
             </div>
             <div>
               <p className="text-gray-300 text-sm leading-relaxed">
-                コンサルタントとしての総合適性スコアです。<br />
-                <span className="text-indigo-400 font-medium">{consultingFit}%</span>は
-                {consultingFit >= 80 ? "非常に高い" : consultingFit >= 65 ? "高い" : consultingFit >= 50 ? "中程度の" : "現時点では低い"}
+                コンサルタントとしての適性スコアです。<br />
+                <span className="text-indigo-400 font-medium">{result.consultingFit}%</span>は
+                {result.consultingFit >= 85
+                  ? "非常に高い"
+                  : result.consultingFit >= 70
+                  ? "高い"
+                  : result.consultingFit >= 60
+                  ? "中程度の"
+                  : "基礎的な"}
                 フィット度です。
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Low-fit 警告 */}
+        {/* Low-fit honest assessment */}
         {isLowFit && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.29 }}
+            transition={{ delay: 0.28 }}
             className="glass-card p-5 border border-amber-500/30"
           >
             <h2 className="text-base font-semibold text-amber-400 mb-3">フェアな評価・転職リスク</h2>
             <div className="space-y-3 text-sm text-gray-300 leading-relaxed">
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
                 <p className="font-medium text-amber-300 mb-1">現時点ではコンサル転職は慎重に検討すべきです</p>
-                <p>コンサル適性スコアが{consultingFit}%のため、即転職すると年収が下がる可能性があります。転職エージェントの「転職を勧める」トークは収益目的であることが多く、あなたの利益とは必ずしも一致しません。</p>
+                <p>コンサル適性スコアが{result.consultingFit}%のため、即転職すると年収が下がる可能性があります。転職エージェントの「転職を勧める」トークは収益目的であることが多く、あなたの利益とは必ずしも一致しません。</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
                 <p className="font-medium text-white mb-1">現職に留まる選択肢も真剣に検討を</p>
@@ -436,7 +304,7 @@ export default function ResultPage() {
           </motion.div>
         )}
 
-        {/* Salary Chart */}
+        {/* Salary Projection Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -500,7 +368,9 @@ export default function ResultPage() {
             ].map((item) => (
               <div key={item.label} className="bg-white/5 rounded-lg p-3">
                 <div className="text-xs text-gray-500 mb-1">{item.label}</div>
-                <div className={`text-xl font-bold ${item.color}`}>{item.value.toLocaleString()}万円</div>
+                <div className={`text-xl font-bold ${item.color}`}>
+                  {item.value.toLocaleString()}万円
+                </div>
               </div>
             ))}
           </div>
@@ -513,7 +383,7 @@ export default function ResultPage() {
           transition={{ delay: 0.35 }}
           className="glass-card p-5"
         >
-          <h2 className="text-base font-semibold text-white mb-4">おすすめポジション</h2>
+          <h2 className="text-base font-semibold text-white mb-4">おすすめポジション（理由付き）</h2>
           <div className="space-y-4">
             {result.recommendedRoles.map((role, i) => (
               <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10">
@@ -560,7 +430,7 @@ export default function ResultPage() {
             </ul>
           </div>
           <div className="glass-card p-4">
-            <h3 className="text-sm font-semibold text-amber-400 mb-3">課題・改善点</h3>
+            <h3 className="text-sm font-semibold text-amber-400 mb-3">課題・伸びしろ</h3>
             <ul className="space-y-2">
               {result.challenges.map((c, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-gray-300">
@@ -585,7 +455,9 @@ export default function ResultPage() {
               目安期間: {result.consultingAdvice.timeline}
             </span>
           </div>
-          <p className="text-gray-300 text-sm leading-relaxed mb-4">{result.consultingAdvice.overview}</p>
+          <p className="text-gray-300 text-sm leading-relaxed mb-4">
+            {result.consultingAdvice.overview}
+          </p>
           <div className="space-y-3">
             <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3">
               <div className="text-xs text-indigo-400 font-medium mb-2">今すぐ活かすべき強み</div>
@@ -607,9 +479,11 @@ export default function ResultPage() {
                 ))}
               </ul>
             </div>
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-              <div className="text-xs text-green-400 font-medium mb-1">まず取るべきアクション</div>
-              <p className="text-xs text-gray-300 leading-relaxed">{result.consultingAdvice.firstStep}</p>
+            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 flex items-start gap-3">
+              <div>
+                <div className="text-xs text-green-400 font-medium mb-1">まず取るべきアクション</div>
+                <p className="text-xs text-gray-300 leading-relaxed">{result.consultingAdvice.firstStep}</p>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -623,10 +497,14 @@ export default function ResultPage() {
             className="glass-card p-5 border border-indigo-500/30"
           >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-full gradient-bg flex items-center justify-center text-xs font-bold">AI</div>
+              <div className="w-6 h-6 rounded-full gradient-bg flex items-center justify-center text-xs font-bold">
+                AI
+              </div>
               <h2 className="text-base font-semibold text-white">AIパーソナル分析</h2>
             </div>
-            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{aiInsight}</p>
+            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+              {aiInsight}
+            </p>
           </motion.div>
         )}
 
@@ -641,14 +519,17 @@ export default function ResultPage() {
           <h2 className="text-xl font-bold text-white mb-2">LINE限定特典</h2>
           <p className="text-gray-300 text-sm mb-4">{result.lineCtaMessage}</p>
           <div className="space-y-2 mb-4 text-left">
-            {["コンサル転職攻略ガイド（非公開）", "ケース面接テンプレート集", "年収交渉スクリプト", "あなたの診断タイプに合った求人情報"].map(
-              (b, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                  <span className="text-green-400">✓</span>
-                  {b}
-                </div>
-              )
-            )}
+            {[
+              "コンサル転職攻略ガイド（非公開）",
+              "ケース面接テンプレート集",
+              "年収交渉スクリプト",
+              "あなたの診断タイプに合った求人情報",
+            ].map((benefit, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                <span className="text-green-400">✓</span>
+                {benefit}
+              </div>
+            ))}
           </div>
           <a
             href={LINE_URL}
@@ -668,7 +549,7 @@ export default function ResultPage() {
               reset();
               router.push("/");
             }}
-            className="text-gray-500 hover:text-gray-300 text-sm underline transition"
+            className="text-gray-500 text-sm hover:text-gray-300 transition"
           >
             もう一度診断する
           </button>

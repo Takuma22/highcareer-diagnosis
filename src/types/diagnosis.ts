@@ -35,10 +35,10 @@ export interface AxisPercentage {
 }
 
 export type QuestionCategory =
-  | "experience"
-  | "skill"
-  | "aptitude"
-  | "mindset";
+  | "experience"   // 経験・実績
+  | "skill"        // スキル・能力
+  | "aptitude"     // 適性・好み
+  | "mindset";     // マインドセット
 
 export interface Question {
   id: number;
@@ -69,9 +69,8 @@ export interface UserProfile {
 }
 
 export interface DiagnosisResult {
-  typeName: DiagnosisTypeName;
-  radarScore: RadarScore;
-  consultingFit: number; // 0-100
+  type: DiagnosisType;
+  axisPercentage: AxisPercentage;
   title: string;
   subtitle: string;
   description: string;
@@ -114,7 +113,7 @@ export interface DiagnosisState {
   step: "profile" | "questions" | "loading" | "result";
   userProfile: UserProfile | null;
   answers: Answer[];
-  radarScore: RadarScore;
+  axisScore: AxisScore;
   result: DiagnosisResult | null;
   aiInsight: string | null;
 }
