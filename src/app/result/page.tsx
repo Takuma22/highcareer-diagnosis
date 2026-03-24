@@ -36,12 +36,12 @@ export default function ResultPage() {
   const { axisPercentage, salaryProjection } = result;
 
   const radarData = [
-    { axis: "実行力", score: axisPercentage.execution },
-    { axis: "戦略思考", score: axisPercentage.strategy },
-    { axis: "対人力", score: axisPercentage.interpersonal },
-    { axis: "専門性", score: axisPercentage.expertise },
-    { axis: "リーダーシップ", score: axisPercentage.leadership },
-    { axis: "適応力", score: axisPercentage.adaptability },
+    { axis: "実行力", score: axisPercentage.execution, avg: 50 },
+    { axis: "戦略思考", score: axisPercentage.strategy, avg: 50 },
+    { axis: "対人力", score: axisPercentage.interpersonal, avg: 50 },
+    { axis: "専門性", score: axisPercentage.expertise, avg: 50 },
+    { axis: "リーダーシップ", score: axisPercentage.leadership, avg: 50 },
+    { axis: "適応力", score: axisPercentage.adaptability, avg: 50 },
   ];
 
   const salaryChartData = [
@@ -152,7 +152,8 @@ export default function ResultPage() {
           transition={{ delay: 0.2 }}
           className="glass-card p-5"
         >
-          <h2 className="text-base font-semibold text-white mb-4">6軸能力レーダーチャート</h2>
+          <h2 className="text-base font-semibold text-white mb-1">6軸能力レーダーチャート</h2>
+          <p className="text-xs text-gray-500 mb-4">ハイキャリア層平均（偏差値50）との比較</p>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
@@ -163,12 +164,23 @@ export default function ResultPage() {
                 />
                 <PolarRadiusAxis
                   angle={90}
-                  domain={[0, 100]}
+                  domain={[30, 70]}
                   tick={{ fill: "#6b7280", fontSize: 10 }}
-                  tickCount={6}
+                  tickCount={5}
+                  tickFormatter={(v) => `${v}`}
+                />
+                {/* ハイキャリア平均ライン */}
+                <Radar
+                  name="ハイキャリア平均"
+                  dataKey="avg"
+                  stroke="rgba(255,255,255,0.35)"
+                  fill="rgba(255,255,255,0.04)"
+                  strokeWidth={1.5}
+                  strokeDasharray="5 3"
+                  dot={false}
                 />
                 <Radar
-                  name="スコア"
+                  name="あなたのスコア"
                   dataKey="score"
                   stroke="#6366f1"
                   fill="#6366f1"
@@ -183,21 +195,38 @@ export default function ResultPage() {
                     borderRadius: "8px",
                     color: "#fff",
                   }}
-                  formatter={(value) => [`${value}点`, "スコア"]}
+                  formatter={(value, name) => [
+                    name === "ハイキャリア平均" ? "偏差値50（平均）" : `偏差値${value}`,
+                    name,
+                  ]}
                 />
               </RadarChart>
             </ResponsiveContainer>
           </div>
+          <div className="flex items-center gap-4 mt-2 mb-4 text-xs text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block w-4 h-0.5 bg-indigo-400"></span>あなた
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block w-4 h-0.5 bg-white/40" style={{ borderTop: "1.5px dashed rgba(255,255,255,0.4)" }}></span>ハイキャリア平均
+            </span>
+          </div>
 
           {/* 6軸スコア一覧 */}
-          <div className="grid grid-cols-2 gap-2 mt-4">
+          <div className="grid grid-cols-2 gap-2 mt-2">
             {axisLabels.map(({ key, label, color }) => {
               const score = axisPercentage[key as keyof typeof axisPercentage];
+              const isAbove = score >= 50;
               return (
                 <div key={key} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
                   <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: color }} />
                   <span className="text-xs text-gray-400 flex-1">{label}</span>
-                  <span className="text-sm font-bold text-white">{score}</span>
+                  <div className="text-right">
+                    <span className="text-sm font-bold text-white">偏差値{score}</span>
+                    <span className={`block text-[10px] leading-none mt-0.5 ${isAbove ? "text-green-400" : "text-amber-400"}`}>
+                      {isAbove ? "平均以上" : "改善余地"}
+                    </span>
+                  </div>
                 </div>
               );
             })}

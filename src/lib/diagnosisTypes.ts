@@ -575,14 +575,22 @@ export function getDiagnosisType(score: AxisScore): DiagnosisType {
   return "オールラウンダー";
 }
 
+// 偏差値変換: raw 0-100 → 偏差値 (平均50, SD10)
+// 基準: 全問3点選択 → raw=60 → 偏差値50
+// 全問1点 → raw=20 → 偏差値30、全問5点 → raw=100 → 偏差値70
+// 式: 偏差値 = 50 + (raw - 60) / 2
+function toHensachi(raw: number): number {
+  return Math.min(70, Math.max(30, Math.round(50 + (raw - 60) / 2)));
+}
+
 export function calculateAxisPercentage(score: AxisScore): AxisPercentage {
   return {
-    execution: score.execution,
-    strategy: score.strategy,
-    interpersonal: score.interpersonal,
-    expertise: score.expertise,
-    leadership: score.leadership,
-    adaptability: score.adaptability,
+    execution: toHensachi(score.execution),
+    strategy: toHensachi(score.strategy),
+    interpersonal: toHensachi(score.interpersonal),
+    expertise: toHensachi(score.expertise),
+    leadership: toHensachi(score.leadership),
+    adaptability: toHensachi(score.adaptability),
   };
 }
 
