@@ -117,7 +117,7 @@ export default function HomePage() {
           {/* Stats */}
           <div className="flex justify-center gap-6 mt-6">
             {[
-              { label: "診断タイプ", value: "16種類" },
+              { label: "診断タイプ", value: "8タイプ" },
               { label: "所要時間", value: "約5分" },
               { label: "AI分析", value: "あり" },
             ].map((stat) => (
