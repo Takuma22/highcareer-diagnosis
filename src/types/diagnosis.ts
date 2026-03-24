@@ -64,6 +64,7 @@ export interface UserProfile {
   currentSalary: number; // 万円
   industry: string;
   skills: string[];
+  otherSkills?: string;
   targetRole?: string;
 }
 

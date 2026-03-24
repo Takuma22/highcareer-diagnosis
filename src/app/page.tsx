@@ -44,6 +44,7 @@ export default function HomePage() {
     currentSalary: "",
     industry: "",
     skills: [] as string[],
+    otherSkills: "",
     targetRole: "",
   });
 
@@ -76,6 +77,7 @@ export default function HomePage() {
       currentSalary: parseInt(form.currentSalary),
       industry: form.industry,
       skills: form.skills,
+      otherSkills: form.otherSkills || undefined,
       targetRole: form.targetRole || undefined,
     };
 
@@ -231,6 +233,19 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
+            <div className="mt-3">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
+                その他のスキル・資格
+                <span className="text-gray-500 text-xs ml-2">（任意）</span>
+              </label>
+              <input
+                type="text"
+                value={form.otherSkills}
+                onChange={(e) => setForm({ ...form, otherSkills: e.target.value })}
+                placeholder="例: PMP、中小企業診断士、TOEIC 900点"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition text-sm"
+              />
+            </div>
           </div>
 
           {/* 希望職種（任意） */}
@@ -263,15 +278,6 @@ export default function HomePage() {
           </p>
         </motion.form>
 
-        {/* Trust signals */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-6 text-center text-xs text-gray-600"
-        >
-          コンサルチャンネル視聴者向け限定コンテンツ
-        </motion.div>
       </div>
     </div>
   );

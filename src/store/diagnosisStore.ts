@@ -117,14 +117,34 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
     const diagnosisType = getDiagnosisType(axisScore);
     const axisPercentage = calculateAxisPercentage(axisScore);
     const typeData = diagnosisTypeData[diagnosisType];
+
+    // コンサルフィット度を動的計算: 全問最高(avgRaw=100)→95%以上
+    const avgRaw = (axisScore.execution + axisScore.strategy + axisScore.interpersonal +
+      axisScore.expertise + axisScore.leadership + axisScore.adaptability) / 6;
+    const dynamicFit = Math.round(Math.min(98, avgRaw * 0.9 + 5));
+    const consultingFit = Math.max(typeData.consultingFit, dynamicFit);
+
+    // オールラウンダー かつ 全軸高スコア(avgRaw>=80 = 偏差値60以上)はポジティブな課題表示
+    const challenges =
+      diagnosisType === "オールラウンダー" && avgRaw >= 80
+        ? [
+            "全軸の高さをキープしながら、さらに1〜2軸を突出させると転職市場での競争力がさらに増す",
+            "多面的な強みを「具体的な実績と数値」で言語化することが、選考突破の最重要ポイント",
+            "ゼネラリストとしての幅と専門性の深さを両立させたキャリア設計が次のステップ",
+            "高い総合力を活かして、経営企画・事業会社の上位ポジションへの挑戦が現実的な射程圏内",
+          ]
+        : typeData.challenges;
+
     const salaryProjection = calculateSalaryProjection(
       userProfile?.currentSalary ?? 500,
       diagnosisType,
-      typeData.consultingFit
+      consultingFit
     );
 
     const result: DiagnosisResult = {
       ...typeData,
+      challenges,
+      consultingFit,
       axisPercentage,
       salaryProjection,
     };

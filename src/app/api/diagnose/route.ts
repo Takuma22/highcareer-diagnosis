@@ -50,6 +50,7 @@ function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string 
     currentSalary,
     industry,
     skills,
+    otherSkills,
   } = userProfile;
 
   const {
@@ -66,7 +67,7 @@ function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string 
 【ユーザー情報】
 - 現職: ${currentRole}（${industry}業界）
 - 現在年収: ${currentSalary}万円
-- 保有スキル: ${skills.join("、")}
+- 保有スキル: ${skills.join("、")}${otherSkills ? `、${otherSkills}` : ""}
 
 【診断結果】
 - タイプ: ${type}「${title}」

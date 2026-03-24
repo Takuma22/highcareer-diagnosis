@@ -471,51 +471,47 @@ export default function ResultPage() {
           </div>
         </motion.div>
 
-        {/* Consulting Advice */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-3">キャリアチェンジアドバイス</h2>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs text-gray-400 bg-white/5 rounded-full px-3 py-1 border border-white/10">
-              目安期間: {result.consultingAdvice.timeline}
-            </span>
-          </div>
-          <p className="text-gray-300 text-sm leading-relaxed mb-4">
-            {result.consultingAdvice.overview}
-          </p>
-          <div className="space-y-3">
-            <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3">
-              <div className="text-xs text-indigo-400 font-medium mb-2">今すぐ活かすべき強み</div>
-              <ul className="space-y-1">
-                {result.consultingAdvice.strengthsToLeverage.map((s, i) => (
-                  <li key={i} className="text-xs text-gray-300 flex items-start gap-2">
-                    <span className="text-indigo-400 mt-0.5">•</span>{s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
-              <div className="text-xs text-purple-400 font-medium mb-2">優先的に習得すべきスキル</div>
-              <ul className="space-y-1">
-                {result.consultingAdvice.skillsToAcquire.map((s, i) => (
-                  <li key={i} className="text-xs text-gray-300 flex items-start gap-2">
-                    <span className="text-purple-400 mt-0.5">•</span>{s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 flex items-start gap-3">
-              <div>
-                <div className="text-xs text-green-400 font-medium mb-1">まず取るべきアクション</div>
-                <p className="text-xs text-gray-300 leading-relaxed">{result.consultingAdvice.firstStep}</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {/* Consulting Advice / CTA */}
+        {(() => {
+          const consultationTexts: Record<string, string> = {
+            指揮官:
+              "あなたのリーダーシップと実行力は、コンサルファームが最も求める組み合わせです。ケントのハイキャリア転職チームとの無料面談で、あなたの実績を最大限に評価してくれるポジションを一緒に見つけましょう。年収30〜50%アップが射程内のあなたの転職戦略を、具体的にご提案します。",
+            参謀:
+              "あなたの戦略思考力と専門性は、コンサルファームが最も欲しがるプロフィールです。ケントのチームが、MBB・戦略系ファームへの選考突破から年収交渉まで一貫してサポートします。あなただけの転職ロードマップを、無料面談でお伝えします。",
+            外交官:
+              "あなたの対人力と適応力は、顧客向けコンサルやHRBP・BizDevポジションで最大限に発揮されます。ケントのチームとの無料面談で、あなたの強みを活かせる具体的なキャリアパスと年収アップの戦略を一緒に設計しましょう。",
+            スペシャリスト:
+              "あなたの専門性は、転職市場で希少価値の高い武器です。ケントのチームが、その専門性を正しく評価してくれるファーム・企業を厳選してご紹介します。無料面談で、専門性を最高年収に変換する戦略をお伝えします。",
+            オールラウンダー:
+              "6軸全方位で高いスコアを誇るあなたは、コンサルや事業会社の経営企画・BizDevで即戦力として評価されます。ケントのチームとの無料面談で、あなたの多面的な強みを活かせる最適なキャリアパスと、年収アップを実現する転職戦略を一緒に設計しましょう。",
+            チャレンジャー:
+              "あなたの行動力と適応力は、変化の激しいスタートアップや新規事業立ち上げのポジションで最大の価値を発揮します。ケントのチームとの無料面談で、あなたのチャレンジ精神を年収に変える具体的な転職戦略をご提案します。",
+            アナリスト:
+              "あなたの戦略思考力は、コンサルファームが最も求めるスキルです。ケントのチームが、その分析力を最大限に評価してくれるファームをご紹介します。無料面談で、あなたの論理思考力を武器にした転職戦略を具体的にお伝えします。",
+            準備中:
+              "今すぐ転職するより、正しい準備が将来の年収を大きく変えます。ケントのチームとの無料面談では、あなたの現状を正直に評価した上で、6〜12ヶ月後の転職成功に向けた具体的なロードマップをお伝えします。",
+          };
+          const text = consultationTexts[result.type] ?? consultationTexts["オールラウンダー"];
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="glass-card p-6 border border-indigo-500/20"
+            >
+              <h2 className="text-base font-semibold text-white mb-3">次のキャリアステップへ</h2>
+              <p className="text-gray-300 text-sm leading-relaxed mb-5">{text}</p>
+              <a
+                href={CONSULTATION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full gradient-bg text-white font-bold py-4 rounded-xl text-base text-center glow transition hover:opacity-90"
+              >
+                無料面談を予約する →
+              </a>
+            </motion.div>
+          );
+        })()}
 
         {/* AI Insight */}
         {aiInsight && (
