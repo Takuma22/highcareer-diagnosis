@@ -69,7 +69,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "3ヶ月で書類・面接準備完了、6〜9ヶ月以内に内定獲得が現実的なターゲット",
       firstStep: "今日やること：直近の最大成果を1件だけ選び、「状況→課題→自分の行動→数値成果」の4行でノートに書く。これが全転職書類の核になります",
     },
-    lineCtaMessage: "リーダーとしての強みを年収に変える転職戦略をLINEでお届けします👇",
   },
 
   // ===== 参謀 =====
@@ -132,7 +131,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "3ヶ月のケース練習＋面接準備で、MBB・上位ファームへの本格応募開始",
       firstStep: "今日やること：ケース面接練習の最初の1問を解き、答えを紙に書いて30分で完成させる。質より完走を優先。これで「準備スイッチ」が入ります",
     },
-    lineCtaMessage: "あなたの分析力をMBBレベルに引き上げる限定サポートをLINEでお届けします👇",
   },
 
   // ===== 外交官 =====
@@ -195,7 +193,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "データスキル強化に3ヶ月、転職活動と並行して6〜9ヶ月での内定獲得を目標",
       firstStep: "今日やること：Udemyにアクセスし、Excelかビジネス分析の講座を1つカートに入れる（買うだけでいい）。それだけで「変わる意思」が形になります",
     },
-    lineCtaMessage: "あなたの対人力を最高年収に変える転職戦略をLINEでお届けします👇",
   },
 
   // ===== スペシャリスト =====
@@ -258,7 +255,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "専門実績の整理に1ヶ月、ビジネス知識補強に2ヶ月、転職活動開始まで計3〜4ヶ月",
       firstStep: "今日やること：自分の専門で「他社に転職した場合に年収がいくらになるか」をビズリーチかdodaで検索する。現実の市場価値を知ることが全ての出発点です",
     },
-    lineCtaMessage: "専門性を最高年収に変える転職戦略をLINEでお届けします👇",
   },
 
   // ===== オールラウンダー =====
@@ -321,7 +317,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "最強軸の決定に1週間、書類・面接準備に2ヶ月、転職活動本格開始まで3ヶ月が目標",
       firstStep: "今日やること：A4の紙に「私の一番の強みは○○である。その証拠は△△（数値）である」の1文を書く。この1文が全ての転職活動の核になります",
     },
-    lineCtaMessage: "オールラウンダーの強みを最大化する転職戦略をLINEでお届けします👇",
   },
 
   // ===== チャレンジャー =====
@@ -384,7 +379,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "1ヶ月で実績の言語化完了、2ヶ月目から転職活動開始、3〜5ヶ月で内定獲得を目標",
       firstStep: "今日やること：直近で一番「大変だったけど乗り越えた経験」を1つ選び、「状況・行動・成果・学び」の4行でノートに書く。これが面接の核になります",
     },
-    lineCtaMessage: "あなたの行動力を高年収に変える転職戦略をLINEでお届けします👇",
   },
 
   // ===== アナリスト =====
@@ -447,7 +441,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "ケース練習に3ヶ月、コミュニケーション強化と並行して4〜5ヶ月での本格応募開始",
       firstStep: "今日やること：ケース面接の最初の1問（売上低下の原因分析など）を30分で紙に解く。質は不問。「解き切る習慣」を作ることが全ての始まりです",
     },
-    lineCtaMessage: "分析力を最高年収に変換する転職戦略をLINEでお届けします👇",
   },
 
   // ===== 準備中 =====
@@ -510,7 +503,6 @@ export const diagnosisTypeData: Record<DiagnosisType, DiagnosisTypeData> = {
       timeline: "3ヶ月でスキル基礎固め、6〜12ヶ月後に転職活動開始。焦らず積み上げることが最速の近道",
       firstStep: "今日やること：6軸の中で「最も今すぐ行動できる1軸」を選んで紙に書く。そのすぐ下に「今週中にできる具体的な行動1つ」を書く。これを今日中に実行する",
     },
-    lineCtaMessage: "スキルアップ計画と将来の年収UP戦略をLINEでお届けします（今転職すべきかも含めて正直に）👇",
   },
 };
 

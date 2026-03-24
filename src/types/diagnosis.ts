@@ -61,7 +61,6 @@ export interface Answer {
 
 export interface UserProfile {
   currentRole: string;
-  yearsOfExperience: number;
   currentSalary: number; // 万円
   industry: string;
   skills: string[];
@@ -81,7 +80,6 @@ export interface DiagnosisResult {
   recommendedRoles: RecommendedRole[];
   salaryProjection: SalaryProjection;
   consultingAdvice: ConsultingAdvice;
-  lineCtaMessage: string;
 }
 
 export interface RecommendedRole {

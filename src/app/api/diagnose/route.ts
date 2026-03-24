@@ -47,7 +47,6 @@ export async function POST(request: NextRequest) {
 function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string {
   const {
     currentRole,
-    yearsOfExperience,
     currentSalary,
     industry,
     skills,
@@ -66,7 +65,6 @@ function buildPrompt(userProfile: UserProfile, result: DiagnosisResult): string 
 
 【ユーザー情報】
 - 現職: ${currentRole}（${industry}業界）
-- 経験年数: ${yearsOfExperience}年
 - 現在年収: ${currentSalary}万円
 - 保有スキル: ${skills.join("、")}
 

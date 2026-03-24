@@ -19,7 +19,7 @@ import {
 } from "recharts";
 import { useDiagnosisStore } from "@/store/diagnosisStore";
 
-const LINE_URL = "https://lin.ee/XXXXXXXX";
+const CONSULTATION_URL = "https://line.me/";
 
 export default function ResultPage() {
   const router = useRouter();
@@ -537,38 +537,29 @@ export default function ResultPage() {
           </motion.div>
         )}
 
-        {/* LINE CTA */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55 }}
-          className="glass-card p-6 border border-green-500/30 text-center pulse-glow"
+          className="space-y-3"
         >
-          <div className="text-4xl mb-3">🎁</div>
-          <h2 className="text-xl font-bold text-white mb-2">LINE限定特典</h2>
-          <p className="text-gray-300 text-sm mb-4">{result.lineCtaMessage}</p>
-          <div className="space-y-2 mb-4 text-left">
-            {[
-              "コンサル転職攻略ガイド（非公開）",
-              "ケース面接テンプレート集",
-              "年収交渉スクリプト",
-              "あなたの診断タイプに合った求人情報",
-            ].map((benefit, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                <span className="text-green-400">✓</span>
-                {benefit}
-              </div>
-            ))}
-          </div>
           <a
-            href={LINE_URL}
+            href={CONSULTATION_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full bg-[#06C755] hover:bg-[#05a847] text-white font-bold py-4 rounded-xl text-lg transition text-center"
+            className="block w-full gradient-bg text-white font-bold py-4 rounded-xl text-lg text-center glow transition hover:opacity-90"
           >
-            LINEで特典を受け取る →
+            無料相談を予約する →
           </a>
-          <p className="text-xs text-gray-600 mt-2">登録無料・いつでもブロック可能</p>
+          <a
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`ハイキャリア転職力診断で「${result.type}」タイプと診断されました！\n\nあなたも診断してみてください👇`)}&url=${encodeURIComponent("https://highcareer-diagnosis.vercel.app")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full bg-white/5 border border-white/10 hover:border-white/30 text-white font-medium py-3 rounded-xl text-base text-center transition"
+          >
+            結果をXでシェアする
+          </a>
         </motion.div>
 
         {/* Retry */}

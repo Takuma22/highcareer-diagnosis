@@ -41,7 +41,6 @@ export default function HomePage() {
 
   const [form, setForm] = useState({
     currentRole: "",
-    yearsOfExperience: "",
     currentSalary: "",
     industry: "",
     skills: [] as string[],
@@ -62,7 +61,6 @@ export default function HomePage() {
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!form.currentRole.trim()) newErrors.currentRole = "現職・職種を入力してください";
-    if (!form.yearsOfExperience) newErrors.yearsOfExperience = "経験年数を入力してください";
     if (!form.currentSalary) newErrors.currentSalary = "現在の年収を入力してください";
     if (!form.industry) newErrors.industry = "業界を選択してください";
     setErrors(newErrors);
@@ -75,7 +73,6 @@ export default function HomePage() {
 
     const profile: UserProfile = {
       currentRole: form.currentRole,
-      yearsOfExperience: parseInt(form.yearsOfExperience),
       currentSalary: parseInt(form.currentSalary),
       industry: form.industry,
       skills: form.skills,
@@ -158,59 +155,37 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* 経験年数 + 年収 */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                社会人経験年数 <span className="text-red-400">*</span>
-              </label>
-              <select
-                value={form.yearsOfExperience}
-                onChange={(e) => setForm({ ...form, yearsOfExperience: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
-              >
-                <option value="" className="bg-gray-900">選択</option>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20].map((y) => (
-                  <option key={y} value={y} className="bg-gray-900">
-                    {y}年{y === 20 ? "以上" : ""}
-                  </option>
-                ))}
-              </select>
-              {errors.yearsOfExperience && (
-                <p className="text-red-400 text-xs mt-1">{errors.yearsOfExperience}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                現在の年収 <span className="text-red-400">*</span>
-              </label>
-              <select
-                value={form.currentSalary}
-                onChange={(e) => setForm({ ...form, currentSalary: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
-              >
-                <option value="" className="bg-gray-900">選択</option>
-                {[
-                  { label: "~300万", value: 250 },
-                  { label: "300~500万", value: 400 },
-                  { label: "500~700万", value: 600 },
-                  { label: "700~1000万", value: 850 },
-                  { label: "1000~1500万", value: 1250 },
-                  { label: "1500~2000万", value: 1750 },
-                  { label: "2000~3000万", value: 2500 },
-                  { label: "3000~5000万", value: 4000 },
-                  { label: "5000~1億", value: 7500 },
-                  { label: "1億~", value: 12000 },
-                ].map((s) => (
-                  <option key={s.value} value={s.value} className="bg-gray-900">
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-              {errors.currentSalary && (
-                <p className="text-red-400 text-xs mt-1">{errors.currentSalary}</p>
-              )}
-            </div>
+          {/* 年収 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              現在の年収 <span className="text-red-400">*</span>
+            </label>
+            <select
+              value={form.currentSalary}
+              onChange={(e) => setForm({ ...form, currentSalary: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
+            >
+              <option value="" className="bg-gray-900">選択</option>
+              {[
+                { label: "~300万", value: 250 },
+                { label: "300~500万", value: 400 },
+                { label: "500~700万", value: 600 },
+                { label: "700~1000万", value: 850 },
+                { label: "1000~1500万", value: 1250 },
+                { label: "1500~2000万", value: 1750 },
+                { label: "2000~3000万", value: 2500 },
+                { label: "3000~5000万", value: 4000 },
+                { label: "5000~1億", value: 7500 },
+                { label: "1億~", value: 12000 },
+              ].map((s) => (
+                <option key={s.value} value={s.value} className="bg-gray-900">
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            {errors.currentSalary && (
+              <p className="text-red-400 text-xs mt-1">{errors.currentSalary}</p>
+            )}
           </div>
 
           {/* 業界 */}
