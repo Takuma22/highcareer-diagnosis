@@ -66,6 +66,8 @@ export interface UserProfile {
   skills: string[];
   otherSkills?: string;
   targetRole?: string;
+  targetFirm?: string; // 志望ファーム種別
+  consultingExperience?: string; // コンサル経験
 }
 
 export interface DiagnosisResult {

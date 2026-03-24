@@ -589,38 +589,66 @@ export function calculateAxisPercentage(score: AxisScore): AxisPercentage {
 export function calculateSalaryProjection(
   currentSalary: number,
   diagnosisType: DiagnosisType,
-  consultingFit: number
+  consultingFit: number,
+  targetFirm?: string,
+  consultingExperience?: string
 ): SalaryProjection {
-  const fitRatio = consultingFit / 100;
-
-  const typeMultiplier: Record<DiagnosisType, number> = {
-    指揮官: 1.50,
-    参謀: 1.55,
-    外交官: 1.30,
-    スペシャリスト: 1.40,
-    オールラウンダー: 1.35,
-    チャレンジャー: 1.35,
-    アナリスト: 1.40,
-    準備中: 0.90,
+  // ファーム別アナリスト年収（転職後1年目の下限）
+  const firmFloor: Record<string, number> = {
+    "戦略系（MBB等）": 700,
+    "総合系（Big4等）": 600,
+    "IT系（アクセンチュア等）": 550,
+    "日系（ベイカレント・アビーム等）": 500,
+    "FAS・財務系": 650,
+    "特に決まっていない": 600,
   };
+  const floor = firmFloor[targetFirm ?? ""] ?? 600;
 
-  const mult = typeMultiplier[diagnosisType] ?? 1.2;
+  // 年収帯別変動率（中央値）
+  let changeRate: number;
+  if (currentSalary <= 400) changeRate = 0.30;
+  else if (currentSalary <= 600) changeRate = 0.20;
+  else if (currentSalary <= 800) changeRate = 0.15;
+  else if (currentSalary <= 1000) changeRate = 0.10;
+  else changeRate = 0.00;
 
-  if (consultingFit < 50) {
+  // コンサル経験補正
+  const expBonus =
+    consultingExperience === "3年以上" ? 0.10 :
+    consultingExperience === "1〜3年" ? 0.05 : 0;
+
+  // コンサルフィット度補正
+  let adjustedChangeRate = changeRate + expBonus;
+  if (consultingFit < 60) {
     return {
       current: currentSalary,
-      year1: Math.round(currentSalary * 0.88),
-      year3: Math.round(currentSalary * 1.00),
-      year5: Math.round(currentSalary * 1.10),
-      bestCase: Math.round(currentSalary * 1.25),
+      year1: Math.round(currentSalary * 0.95),
+      year3: Math.round(currentSalary * 1.05),
+      year5: Math.round(currentSalary * 1.20),
+      bestCase: Math.round(currentSalary * 1.35),
       currency: "万円",
     };
+  } else if (consultingFit < 80) {
+    adjustedChangeRate *= 0.7;
   }
 
-  const year1 = Math.round(currentSalary * (1 + fitRatio * 0.12));
-  const year3 = Math.round(currentSalary * (1 + fitRatio * (mult - 1) * 0.8));
-  const year5 = Math.round(currentSalary * mult);
-  const bestCase = Math.round(currentSalary * mult * 1.25);
+  // タイプ別5年後倍率（転職後1年目比）
+  const typeYear5Mult: Record<DiagnosisType, number> = {
+    指揮官: 1.8,
+    参謀: 2.0,
+    外交官: 1.6,
+    スペシャリスト: 1.7,
+    オールラウンダー: 1.7,
+    チャレンジャー: 1.5,
+    アナリスト: 1.8,
+    準備中: 1.3,
+  };
+  const mult = typeYear5Mult[diagnosisType] ?? 1.5;
+
+  const year1 = Math.max(Math.round(currentSalary * (1 + adjustedChangeRate)), floor);
+  const year3 = Math.round(year1 * Math.pow(mult, 3 / 5));
+  const year5 = Math.round(year1 * mult);
+  const bestCase = Math.round(year5 * 1.2);
 
   return { current: currentSalary, year1, year3, year5, bestCase, currency: "万円" };
 }

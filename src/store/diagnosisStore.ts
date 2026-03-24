@@ -138,7 +138,9 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
     const salaryProjection = calculateSalaryProjection(
       userProfile?.currentSalary ?? 500,
       diagnosisType,
-      consultingFit
+      consultingFit,
+      userProfile?.targetFirm,
+      userProfile?.consultingExperience
     );
 
     const result: DiagnosisResult = {

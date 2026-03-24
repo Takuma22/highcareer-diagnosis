@@ -46,6 +46,8 @@ export default function HomePage() {
     skills: [] as string[],
     otherSkills: "",
     targetRole: "",
+    targetFirm: "",
+    consultingExperience: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -79,6 +81,8 @@ export default function HomePage() {
       skills: form.skills,
       otherSkills: form.otherSkills || undefined,
       targetRole: form.targetRole || undefined,
+      targetFirm: form.targetFirm || undefined,
+      consultingExperience: form.consultingExperience || undefined,
     };
 
     setUserProfile(profile);
@@ -261,6 +265,49 @@ export default function HomePage() {
               placeholder="例: 戦略コンサルタント、経営企画"
               className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
             />
+          </div>
+
+          {/* 志望ファーム種別 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              志望ファーム種別
+              <span className="text-gray-500 text-xs ml-2">（任意）</span>
+            </label>
+            <select
+              value={form.targetFirm}
+              onChange={(e) => setForm({ ...form, targetFirm: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
+            >
+              <option value="" className="bg-gray-900">選択してください</option>
+              {[
+                "戦略系（MBB等）",
+                "総合系（Big4等）",
+                "IT系（アクセンチュア等）",
+                "日系（ベイカレント・アビーム等）",
+                "FAS・財務系",
+                "特に決まっていない",
+              ].map((f) => (
+                <option key={f} value={f} className="bg-gray-900">{f}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* コンサル経験 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              コンサル経験
+              <span className="text-gray-500 text-xs ml-2">（任意）</span>
+            </label>
+            <select
+              value={form.consultingExperience}
+              onChange={(e) => setForm({ ...form, consultingExperience: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition"
+            >
+              <option value="" className="bg-gray-900">選択してください</option>
+              {["未経験", "1〜3年", "3年以上"].map((exp) => (
+                <option key={exp} value={exp} className="bg-gray-900">{exp}</option>
+              ))}
+            </select>
           </div>
 
           {/* Submit */}

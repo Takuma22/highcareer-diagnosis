@@ -403,6 +403,9 @@ export default function ResultPage() {
               </div>
             ))}
           </div>
+          <p className="text-[10px] text-gray-600 mt-3 leading-relaxed">
+            ※JACリクルートメント、OpenWork、各社採用ページ等の公開データに基づく推計値です
+          </p>
         </motion.div>
 
         {/* Recommended Roles */}
