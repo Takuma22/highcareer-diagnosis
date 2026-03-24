@@ -21,6 +21,12 @@ import { useDiagnosisStore } from "@/store/diagnosisStore";
 
 const CONSULTATION_URL = "https://line.me/";
 
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, delay },
+});
+
 export default function ResultPage() {
   const router = useRouter();
   const { result, userProfile, aiInsight, reset, answers, axisScore } = useDiagnosisStore();
@@ -53,9 +59,7 @@ export default function ResultPage() {
   ];
 
   const jumpRate = Math.round(
-    ((salaryProjection.year3 - salaryProjection.current) /
-      salaryProjection.current) *
-      100
+    ((salaryProjection.year3 - salaryProjection.current) / salaryProjection.current) * 100
   );
   const isLowFit = result.consultingFit < 65;
   const hasSalaryRisk = salaryProjection.year1 < salaryProjection.current;
@@ -63,76 +67,97 @@ export default function ResultPage() {
   const totalAnswers = answers.length;
   const avgScore =
     totalAnswers > 0
-      ? Math.round(
-          (answers.reduce((sum, a) => sum + a.value, 0) / totalAnswers) * 10
-        ) / 10
+      ? Math.round((answers.reduce((sum, a) => sum + a.value, 0) / totalAnswers) * 10) / 10
       : 0;
   const highCount = answers.filter((a) => a.value >= 4).length;
   const midCount = answers.filter((a) => a.value === 3).length;
 
   const axisLabels = [
-    { key: "execution", label: "実行力", color: "#6366f1" },
-    { key: "strategy", label: "戦略思考", color: "#3b82f6" },
+    { key: "execution", label: "実行力", color: "#e2b55a" },
+    { key: "strategy", label: "戦略思考", color: "#4a7fdb" },
     { key: "interpersonal", label: "対人力", color: "#10b981" },
-    { key: "expertise", label: "専門性", color: "#f59e0b" },
+    { key: "expertise", label: "専門性", color: "#a855f7" },
     { key: "leadership", label: "リーダーシップ", color: "#ec4899" },
-    { key: "adaptability", label: "適応力", color: "#8b5cf6" },
+    { key: "adaptability", label: "適応力", color: "#f97316" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] relative overflow-hidden">
+    <div className="min-h-screen bg-[#090b1a] relative overflow-hidden">
       {/* BG */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#e2b55a]/6 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-600/8 rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 py-10 space-y-6">
-        {/* Type Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-2 mb-3">
-            <span className="text-indigo-400 text-sm">診断結果</span>
+      <div className="relative z-10 max-w-xl mx-auto px-4 py-10 space-y-5">
+
+        {/* ===== TYPE BADGE (Hero) ===== */}
+        <motion.div {...fadeUp(0)} className="text-center">
+          <div
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 text-xs font-bold tracking-widest"
+            style={{
+              background: "rgba(226,181,90,0.1)",
+              border: "1px solid rgba(226,181,90,0.3)",
+              color: "#e2b55a",
+            }}
+          >
+            ✦ 診断結果
           </div>
-          <div className="text-5xl font-black gradient-text mb-2">{result.type}</div>
-          <h1 className="text-2xl font-bold text-white mb-1">{result.title}</h1>
+
+          {/* Type name */}
+          <div
+            className="inline-block px-8 py-3 rounded-2xl mb-4"
+            style={{
+              background: "linear-gradient(135deg, rgba(226,181,90,0.15), rgba(226,181,90,0.05))",
+              border: "1.5px solid rgba(226,181,90,0.4)",
+              boxShadow: "0 0 40px rgba(226,181,90,0.2)",
+            }}
+          >
+            <div className="text-5xl sm:text-6xl font-black gradient-text mb-1 leading-tight">
+              {result.type}
+            </div>
+          </div>
+
+          <h1 className="text-xl sm:text-2xl font-black text-white mb-2">{result.title}</h1>
           <p className="text-gray-400 text-sm">{result.subtitle}</p>
         </motion.div>
 
-        {/* Description */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-2">タイプ概要</h2>
+        {/* ===== DESCRIPTION ===== */}
+        <motion.div {...fadeUp(0.1)} className="glass-card p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="gold-divider" />
+            <h2 className="text-sm font-bold text-white">タイプ概要</h2>
+          </div>
           <p className="text-gray-300 leading-relaxed text-sm">{result.description}</p>
         </motion.div>
 
-        {/* 回答傾向サマリー */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-3">回答傾向サマリー</h2>
+        {/* ===== 回答傾向サマリー ===== */}
+        <motion.div {...fadeUp(0.15)} className="glass-card p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="gold-divider" />
+            <h2 className="text-sm font-bold text-white">回答傾向サマリー</h2>
+          </div>
           <div className="grid grid-cols-3 gap-3 mb-3">
-            <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3 text-center">
-              <div className="text-2xl font-black text-indigo-300">{avgScore}</div>
-              <div className="text-xs text-gray-500 mt-1">平均スコア<br />（5点満点）</div>
+            <div
+              className="rounded-xl p-4 text-center"
+              style={{ background: "rgba(226,181,90,0.08)", border: "1px solid rgba(226,181,90,0.2)" }}
+            >
+              <div className="text-3xl font-black gradient-text">{avgScore}</div>
+              <div className="text-[10px] text-gray-500 mt-1">平均スコア<br />（5点満点）</div>
             </div>
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
-              <div className="text-2xl font-black text-green-300">{highCount}</div>
-              <div className="text-xs text-gray-500 mt-1">強く同意<br />（4〜5点）</div>
+            <div
+              className="rounded-xl p-4 text-center"
+              style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}
+            >
+              <div className="text-3xl font-black text-emerald-400">{highCount}</div>
+              <div className="text-[10px] text-gray-500 mt-1">強く同意<br />（4〜5点）</div>
             </div>
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-center">
-              <div className="text-2xl font-black text-amber-300">{midCount}</div>
-              <div className="text-xs text-gray-500 mt-1">どちらでもない<br />（3点）</div>
+            <div
+              className="rounded-xl p-4 text-center"
+              style={{ background: "rgba(168,85,247,0.08)", border: "1px solid rgba(168,85,247,0.2)" }}
+            >
+              <div className="text-3xl font-black text-purple-400">{midCount}</div>
+              <div className="text-[10px] text-gray-500 mt-1">どちらでもない<br />（3点）</div>
             </div>
           </div>
           <p className="text-xs text-gray-400 leading-relaxed">
@@ -145,19 +170,17 @@ export default function ResultPage() {
           </p>
         </motion.div>
 
-        {/* Radar Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-1">6軸能力レーダーチャート</h2>
-          <p className="text-xs text-gray-500 mb-4">ハイキャリア層平均（偏差値50）との比較</p>
+        {/* ===== RADAR CHART ===== */}
+        <motion.div {...fadeUp(0.2)} className="glass-card p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="gold-divider" />
+            <h2 className="text-sm font-bold text-white">6軸能力レーダーチャート</h2>
+          </div>
+          <p className="text-xs text-gray-500 mb-4 ml-10">ハイキャリア層平均（偏差値50）との比較</p>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
-                <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                <PolarGrid stroke="rgba(255,255,255,0.07)" />
                 <PolarAngleAxis
                   dataKey="axis"
                   tick={{ fill: "#9ca3af", fontSize: 12, fontWeight: 500 }}
@@ -169,12 +192,11 @@ export default function ResultPage() {
                   tickCount={5}
                   tickFormatter={(v) => `${v}`}
                 />
-                {/* ハイキャリア平均ライン */}
                 <Radar
                   name="ハイキャリア平均"
                   dataKey="avg"
-                  stroke="rgba(255,255,255,0.35)"
-                  fill="rgba(255,255,255,0.04)"
+                  stroke="rgba(255,255,255,0.25)"
+                  fill="rgba(255,255,255,0.02)"
                   strokeWidth={1.5}
                   strokeDasharray="5 3"
                   dot={false}
@@ -182,18 +204,19 @@ export default function ResultPage() {
                 <Radar
                   name="あなたのスコア"
                   dataKey="score"
-                  stroke="#6366f1"
-                  fill="#6366f1"
-                  fillOpacity={0.25}
-                  strokeWidth={2}
-                  dot={{ fill: "#6366f1", r: 4, strokeWidth: 0 }}
+                  stroke="#e2b55a"
+                  fill="#e2b55a"
+                  fillOpacity={0.18}
+                  strokeWidth={2.5}
+                  dot={{ fill: "#e2b55a", r: 4, strokeWidth: 0 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "rgba(15,15,30,0.95)",
-                    border: "1px solid rgba(99,102,241,0.4)",
-                    borderRadius: "8px",
+                    background: "rgba(10,11,26,0.97)",
+                    border: "1px solid rgba(226,181,90,0.3)",
+                    borderRadius: "10px",
                     color: "#fff",
+                    fontSize: "12px",
                   }}
                   formatter={(value, name) => [
                     name === "ハイキャリア平均" ? "偏差値50（平均）" : `偏差値${value}`,
@@ -203,27 +226,40 @@ export default function ResultPage() {
               </RadarChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex items-center gap-4 mt-2 mb-4 text-xs text-gray-500">
+          <div className="flex items-center gap-4 mt-1 mb-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
-              <span className="inline-block w-4 h-0.5 bg-indigo-400"></span>あなた
+              <span className="inline-block w-4 h-0.5" style={{ background: "#e2b55a" }} />
+              あなた
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block w-4 h-0.5 bg-white/40" style={{ borderTop: "1.5px dashed rgba(255,255,255,0.4)" }}></span>ハイキャリア平均
+              <span
+                className="inline-block w-4 h-0"
+                style={{ borderTop: "1.5px dashed rgba(255,255,255,0.3)" }}
+              />
+              ハイキャリア平均
             </span>
           </div>
 
           {/* 6軸スコア一覧 */}
-          <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="grid grid-cols-2 gap-2">
             {axisLabels.map(({ key, label, color }) => {
               const score = axisPercentage[key as keyof typeof axisPercentage];
               const isAbove = score >= 50;
               return (
-                <div key={key} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                <div
+                  key={key}
+                  className="flex items-center gap-2.5 rounded-xl px-3 py-2.5"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+                >
                   <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: color }} />
                   <span className="text-xs text-gray-400 flex-1">{label}</span>
                   <div className="text-right">
-                    <span className="text-sm font-bold text-white">偏差値{score}</span>
-                    <span className={`block text-[10px] leading-none mt-0.5 ${isAbove ? "text-green-400" : "text-amber-400"}`}>
+                    <span className="text-sm font-black text-white">偏差値{score}</span>
+                    <span
+                      className={`block text-[10px] leading-none mt-0.5 font-medium ${
+                        isAbove ? "text-emerald-400" : "text-amber-400"
+                      }`}
+                    >
                       {isAbove ? "平均以上" : "改善余地"}
                     </span>
                   </div>
@@ -233,14 +269,12 @@ export default function ResultPage() {
           </div>
         </motion.div>
 
-        {/* Detailed Analysis */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.22 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-3">詳細な性格分析</h2>
+        {/* ===== DETAILED ANALYSIS ===== */}
+        <motion.div {...fadeUp(0.22)} className="glass-card p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="gold-divider" />
+            <h2 className="text-sm font-bold text-white">詳細な性格分析</h2>
+          </div>
           <div className="text-gray-300 text-sm leading-relaxed space-y-3">
             {result.detailedAnalysis.split("\n\n").map((paragraph, i) => (
               <p key={i}>{paragraph}</p>
@@ -248,24 +282,25 @@ export default function ResultPage() {
           </div>
         </motion.div>
 
-        {/* Consulting Fit */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-3">コンサルフィット度</h2>
-          <div className="flex items-center gap-4">
-            <div className="relative w-24 h-24 flex-shrink-0">
-              <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="10" />
-                <motion.circle
-                  cx="50"
-                  cy="50"
-                  r="40"
+        {/* ===== CONSULTING FIT ===== */}
+        <motion.div {...fadeUp(0.25)} className="glass-card p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="gold-divider" />
+            <h2 className="text-sm font-bold text-white">コンサルフィット度</h2>
+          </div>
+          <div className="flex items-center gap-5">
+            <div className="relative w-28 h-28 flex-shrink-0">
+              <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
+                <circle
+                  cx="50" cy="50" r="40"
                   fill="none"
-                  stroke="url(#grad)"
+                  stroke="rgba(255,255,255,0.04)"
+                  strokeWidth="10"
+                />
+                <motion.circle
+                  cx="50" cy="50" r="40"
+                  fill="none"
+                  stroke="url(#goldGrad)"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={`${2 * Math.PI * 40}`}
@@ -273,12 +308,12 @@ export default function ResultPage() {
                   animate={{
                     strokeDashoffset: 2 * Math.PI * 40 * (1 - result.consultingFit / 100),
                   }}
-                  transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+                  transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
                 />
                 <defs>
-                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#6366f1" />
-                    <stop offset="100%" stopColor="#ec4899" />
+                  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#c49a3a" />
+                    <stop offset="100%" stopColor="#f0c97a" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -289,7 +324,10 @@ export default function ResultPage() {
             <div>
               <p className="text-gray-300 text-sm leading-relaxed">
                 コンサルタントとしての適性スコアです。<br />
-                <span className="text-indigo-400 font-medium">{result.consultingFit}%</span>は
+                <span className="font-bold" style={{ color: "#e2b55a" }}>
+                  {result.consultingFit}%
+                </span>
+                は
                 {result.consultingFit >= 85
                   ? "非常に高い"
                   : result.consultingFit >= 70
@@ -303,76 +341,129 @@ export default function ResultPage() {
           </div>
         </motion.div>
 
-        {/* Low-fit honest assessment */}
+        {/* ===== LOW-FIT WARNING ===== */}
         {isLowFit && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.28 }}
-            className="glass-card p-5 border border-amber-500/30"
+            {...fadeUp(0.28)}
+            className="glass-card p-5"
+            style={{ borderColor: "rgba(251,191,36,0.3)" }}
           >
-            <h2 className="text-base font-semibold text-amber-400 mb-3">フェアな評価・転職リスク</h2>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-1 h-6 rounded-full" style={{ background: "#f59e0b" }} />
+              <h2 className="text-sm font-bold text-amber-400">フェアな評価・転職リスク</h2>
+            </div>
             <div className="space-y-3 text-sm text-gray-300 leading-relaxed">
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-                <p className="font-medium text-amber-300 mb-1">現時点ではコンサル転職は慎重に検討すべきです</p>
-                <p>コンサル適性スコアが{result.consultingFit}%のため、即転職すると年収が下がる可能性があります。転職エージェントの「転職を勧める」トークは収益目的であることが多く、あなたの利益とは必ずしも一致しません。</p>
+              <div
+                className="rounded-xl p-3.5"
+                style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)" }}
+              >
+                <p className="font-bold text-amber-300 mb-1">現時点ではコンサル転職は慎重に検討すべきです</p>
+                <p className="text-sm text-gray-400">コンサル適性スコアが{result.consultingFit}%のため、即転職すると年収が下がる可能性があります。</p>
               </div>
-              <div className="bg-white/5 rounded-lg p-3">
-                <p className="font-medium text-white mb-1">現職に留まる選択肢も真剣に検討を</p>
-                <p>現職でのスキルアップ・年収交渉・社内異動の方が、リスクを抑えてキャリアを高められる可能性があります。6〜12ヶ月かけてスキルを積み上げてから再診断することを推奨します。</p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-3">
-                <p className="font-medium text-white mb-1">転職を選ぶなら最低限やること</p>
-                <ul className="space-y-1 text-xs text-gray-400 mt-1">
-                  <li>• 低いスコアの軸を3ヶ月集中して強化する</li>
-                  <li>• 複数エージェントで実際に書類を通過できるか確認する</li>
-                  <li>• 転職後の最初の1年は年収が下がることを前提に生活設計を立てる</li>
-                </ul>
+              <div
+                className="rounded-xl p-3.5"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+              >
+                <p className="font-bold text-white mb-1">現職に留まる選択肢も真剣に検討を</p>
+                <p className="text-sm text-gray-400">現職でのスキルアップ・年収交渉の方が、リスクを抑えてキャリアを高められる可能性があります。</p>
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* Salary Projection Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="glass-card p-5"
-        >
+        {/* ===== SALARY PROJECTION ===== */}
+        <motion.div {...fadeUp(0.3)} className="glass-card p-5">
           <div className="flex items-start justify-between mb-4">
-            <h2 className="text-base font-semibold text-white">
-              {hasSalaryRisk ? "転職後の年収シミュレーション" : "年収ジャンプアップ予測"}
-            </h2>
-            <div className="text-right">
-              <div className={`text-2xl font-black ${jumpRate >= 0 ? "text-green-400" : "text-amber-400"}`}>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="gold-divider" />
+                <h2 className="text-sm font-bold text-white">
+                  {hasSalaryRisk ? "転職後の年収シミュレーション" : "年収ジャンプアップ予測"}
+                </h2>
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <div
+                className={`text-4xl font-black leading-none ${
+                  jumpRate >= 0 ? "gradient-text" : "text-amber-400"
+                }`}
+              >
                 {jumpRate >= 0 ? "+" : ""}{jumpRate}%
               </div>
-              <div className="text-xs text-gray-500">3年後目安</div>
+              <div className="text-[10px] text-gray-500 mt-1">3年後目安</div>
             </div>
           </div>
+
           {hasSalaryRisk && (
-            <div className="mb-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 text-xs text-amber-300 leading-relaxed">
-              コンサル適性スコアが低いため、転職直後は一時的な年収低下が見込まれます。現職に留まりながらスキルを積んでから転職するのが現実的です。
+            <div
+              className="mb-4 rounded-xl px-4 py-3 text-xs leading-relaxed"
+              style={{
+                background: "rgba(251,191,36,0.08)",
+                border: "1px solid rgba(251,191,36,0.25)",
+                color: "#fbbf24",
+              }}
+            >
+              コンサル適性スコアが低いため、転職直後は一時的な年収低下が見込まれます。
             </div>
           )}
-          <div className="h-44">
+
+          {/* Salary numbers (big) */}
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            {[
+              { label: "現在", value: salaryProjection.current, color: "#9ca3af", isMain: false },
+              { label: "3年後", value: salaryProjection.year3, color: "#e2b55a", isMain: true },
+              { label: "5年後", value: salaryProjection.year5, color: "#f0c97a", isMain: false },
+              { label: "最高値", value: salaryProjection.bestCase, color: "#f5d78a", isMain: false },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="rounded-xl p-4"
+                style={
+                  item.isMain
+                    ? {
+                        background: "linear-gradient(135deg, rgba(226,181,90,0.15), rgba(226,181,90,0.05))",
+                        border: "1.5px solid rgba(226,181,90,0.35)",
+                        boxShadow: "0 0 20px rgba(226,181,90,0.1)",
+                      }
+                    : {
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                      }
+                }
+              >
+                <div className="text-xs text-gray-500 mb-1.5">{item.label}</div>
+                <div
+                  className={`font-black leading-none`}
+                  style={{
+                    color: item.color,
+                    fontSize: item.isMain ? "1.75rem" : "1.4rem",
+                  }}
+                >
+                  {item.value.toLocaleString()}
+                  <span className="text-sm font-medium ml-0.5">万円</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Chart */}
+          <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={salaryChartData}>
                 <defs>
                   <linearGradient id="salaryGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#e2b55a" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#e2b55a" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="year" stroke="#6b7280" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#6b7280" tick={{ fontSize: 11 }} tickFormatter={(v) => `${v}万`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                <XAxis dataKey="year" stroke="#6b7280" tick={{ fontSize: 11, fill: "#6b7280" }} />
+                <YAxis stroke="#6b7280" tick={{ fontSize: 11, fill: "#6b7280" }} tickFormatter={(v) => `${v}万`} />
                 <Tooltip
                   contentStyle={{
-                    background: "rgba(15,15,30,0.9)",
-                    border: "1px solid rgba(99,102,241,0.3)",
-                    borderRadius: "8px",
+                    background: "rgba(9,11,26,0.97)",
+                    border: "1px solid rgba(226,181,90,0.3)",
+                    borderRadius: "10px",
                     color: "#fff",
                   }}
                   formatter={(value) => [`${value}万円`, "年収"]}
@@ -380,62 +471,75 @@ export default function ResultPage() {
                 <Area
                   type="monotone"
                   dataKey="年収"
-                  stroke="#6366f1"
-                  strokeWidth={2}
+                  stroke="#e2b55a"
+                  strokeWidth={2.5}
                   fill="url(#salaryGrad)"
-                  dot={{ fill: "#6366f1", r: 4 }}
+                  dot={{ fill: "#e2b55a", r: 4, strokeWidth: 0 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            {[
-              { label: "現在", value: salaryProjection.current, color: "text-gray-400" },
-              { label: "3年後", value: salaryProjection.year3, color: "text-indigo-400" },
-              { label: "5年後", value: salaryProjection.year5, color: "text-purple-400" },
-              { label: "最高値", value: salaryProjection.bestCase, color: "text-amber-400" },
-            ].map((item) => (
-              <div key={item.label} className="bg-white/5 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">{item.label}</div>
-                <div className={`text-xl font-bold ${item.color}`}>
-                  {item.value.toLocaleString()}万円
-                </div>
-              </div>
-            ))}
           </div>
           <p className="text-[10px] text-gray-600 mt-3 leading-relaxed">
             ※JACリクルートメント、OpenWork、各社採用ページ等の公開データに基づく推計値です
           </p>
         </motion.div>
 
-        {/* Recommended Roles */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="glass-card p-5"
-        >
-          <h2 className="text-base font-semibold text-white mb-4">おすすめポジション（理由付き）</h2>
+        {/* ===== RECOMMENDED ROLES ===== */}
+        <motion.div {...fadeUp(0.35)} className="glass-card p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="gold-divider" />
+            <h2 className="text-sm font-bold text-white">おすすめポジション</h2>
+          </div>
           <div className="space-y-4">
             {result.recommendedRoles.map((role, i) => (
-              <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                <div className="flex items-start gap-3 mb-2">
-                  <div className="flex-shrink-0 w-10 h-10 gradient-bg rounded-lg flex items-center justify-center text-white font-bold text-sm">
+              <div
+                key={i}
+                className="rounded-xl p-4"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <div
+                    className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center font-black text-sm"
+                    style={{
+                      background: "linear-gradient(135deg, #b8872e, #e2b55a)",
+                      color: "#0d0d1a",
+                    }}
+                  >
                     #{i + 1}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <span className="font-semibold text-white text-sm">{role.title}</span>
-                      <span className="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full">
+                      <span className="font-bold text-white text-sm">{role.title}</span>
+                      <span
+                        className="text-xs px-2 py-0.5 rounded-full font-medium"
+                        style={{
+                          background: "rgba(226,181,90,0.12)",
+                          color: "#e2b55a",
+                          border: "1px solid rgba(226,181,90,0.3)",
+                        }}
+                      >
                         フィット {role.fitScore}%
                       </span>
                     </div>
-                    <div className="text-xs text-indigo-400 font-medium mb-1">{role.firm}</div>
+                    <div className="text-xs font-medium mb-1" style={{ color: "#e2b55a" }}>
+                      {role.firm}
+                    </div>
                     <div className="text-xs text-gray-400">{role.description}</div>
                   </div>
                 </div>
-                <div className="bg-white/5 rounded-lg p-3 mt-2 border-l-2 border-indigo-500/50">
-                  <div className="text-xs text-indigo-400 font-medium mb-1">推薦理由</div>
+                <div
+                  className="rounded-lg p-3 border-l-2"
+                  style={{
+                    background: "rgba(226,181,90,0.05)",
+                    borderLeftColor: "#e2b55a",
+                  }}
+                >
+                  <div className="text-xs font-bold mb-1" style={{ color: "#e2b55a" }}>
+                    推薦理由
+                  </div>
                   <p className="text-xs text-gray-300 leading-relaxed">{role.reason}</p>
                 </div>
               </div>
@@ -443,30 +547,47 @@ export default function ResultPage() {
           </div>
         </motion.div>
 
-        {/* Strengths & Challenges */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="grid grid-cols-2 gap-4"
-        >
+        {/* ===== STRENGTHS & CHALLENGES ===== */}
+        <motion.div {...fadeUp(0.4)} className="grid grid-cols-2 gap-4">
           <div className="glass-card p-4">
-            <h3 className="text-sm font-semibold text-green-400 mb-3">強み</h3>
+            <h3
+              className="text-sm font-bold mb-3 flex items-center gap-2"
+              style={{ color: "#34d399" }}
+            >
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black"
+                style={{ background: "rgba(52,211,153,0.2)" }}
+              >
+                ✓
+              </span>
+              強み
+            </h3>
             <ul className="space-y-2">
               {result.strengths.map((s, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-gray-300">
-                  <span className="text-green-400 mt-0.5">✓</span>
+                  <span className="mt-0.5 flex-shrink-0" style={{ color: "#34d399" }}>•</span>
                   {s}
                 </li>
               ))}
             </ul>
           </div>
           <div className="glass-card p-4">
-            <h3 className="text-sm font-semibold text-amber-400 mb-3">課題・伸びしろ</h3>
+            <h3
+              className="text-sm font-bold mb-3 flex items-center gap-2"
+              style={{ color: "#e2b55a" }}
+            >
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black"
+                style={{ background: "rgba(226,181,90,0.2)" }}
+              >
+                △
+              </span>
+              課題・伸びしろ
+            </h3>
             <ul className="space-y-2">
               {result.challenges.map((c, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-gray-300">
-                  <span className="text-amber-400 mt-0.5">△</span>
+                  <span className="mt-0.5 flex-shrink-0" style={{ color: "#e2b55a" }}>•</span>
                   {c}
                 </li>
               ))}
@@ -474,7 +595,7 @@ export default function ResultPage() {
           </div>
         </motion.div>
 
-        {/* Consulting Advice / CTA */}
+        {/* ===== CTA - CONSULTATION ===== */}
         {(() => {
           const consultationTexts: Record<string, string> = {
             指揮官:
@@ -486,49 +607,55 @@ export default function ResultPage() {
             スペシャリスト:
               "あなたの専門性は、転職市場で希少価値の高い武器です。ケントのハイキャリア転職支援チームが、その専門性を正しく評価してくれる企業・ファームを厳選してご紹介します。無料面談で、専門性を最高年収に変換する戦略をお伝えします。",
             オールラウンダー:
-              "6軸全方位で高いスコアを誇るあなたは、コンサルや事業会社の経営企画・BizDevで即戦力として評価されます。ケントのハイキャリア転職支援チームとの無料面談で、あなたの多面的な強みを活かせる最適なキャリアプランと、年収アップを実現する転職戦略を一緒に設計しましょう。",
+              "6軸全方位で高いスコアを誇るあなたは、コンサルや事業会社の経営企画・BizDevで即戦力として評価されます。ケントのハイキャリア転職支援チームとの無料面談で、あなたの多面的な強みを活かせる最適なキャリアプランを設計しましょう。",
             チャレンジャー:
-              "あなたの行動力と適応力は、変化の激しいスタートアップや新規事業立ち上げのポジションで最大の価値を発揮します。ケントのハイキャリア転職支援チームとの無料面談で、あなたのチャレンジ精神を年収に変える具体的な転職戦略をご提案します。",
+              "あなたの行動力と適応力は、変化の激しいスタートアップや新規事業立ち上げのポジションで最大の価値を発揮します。ケントのハイキャリア転職支援チームとの無料面談で、あなたのチャレンジ精神を年収に変える転職戦略をご提案します。",
             アナリスト:
-              "あなたの戦略思考力は、転職市場で最も求められるスキルです。ケントのハイキャリア転職支援チームが、その分析力を最大限に評価してくれる企業・ファームをご紹介します。無料面談で、あなたの論理思考力を武器にした転職戦略を具体的にお伝えします。",
+              "あなたの戦略思考力は、転職市場で最も求められるスキルです。ケントのハイキャリア転職支援チームが、その分析力を最大限に評価してくれる企業・ファームをご紹介します。無料面談で、論理思考力を武器にした転職戦略をお伝えします。",
             準備中:
               "今すぐ転職するより、正しい準備が将来の年収を大きく変えます。ケントのハイキャリア転職支援チームとの無料面談では、あなたの現状を正直に評価した上で、6〜12ヶ月後の転職成功に向けた具体的なロードマップをお伝えします。",
           };
           const text = consultationTexts[result.type] ?? consultationTexts["オールラウンダー"];
           return (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
-              className="glass-card p-6 border border-indigo-500/20"
+              {...fadeUp(0.45)}
+              className="glass-card-gold p-6"
             >
-              <h2 className="text-base font-semibold text-white mb-3">次のキャリアステップへ</h2>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="gold-divider" />
+                <h2 className="text-sm font-bold text-white">次のキャリアステップへ</h2>
+              </div>
               <p className="text-gray-300 text-sm leading-relaxed mb-5">{text}</p>
-              <a
+              <motion.a
                 href={CONSULTATION_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full gradient-bg text-white font-bold py-4 rounded-xl text-base text-center glow transition hover:opacity-90"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="block w-full btn-shimmer text-[#0d0d1a] font-black py-4 rounded-xl text-base text-center"
+                style={{ boxShadow: "0 0 40px rgba(226,181,90,0.4), 0 4px 20px rgba(226,181,90,0.2)" }}
               >
                 無料面談を予約する →
-              </a>
+              </motion.a>
             </motion.div>
           );
         })()}
 
-        {/* AI Insight */}
+        {/* ===== AI INSIGHT ===== */}
         {aiInsight && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="glass-card p-5 border border-indigo-500/30"
+            {...fadeUp(0.5)}
+            className="glass-card p-5"
+            style={{ borderColor: "rgba(226,181,90,0.2)" }}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-full gradient-bg flex items-center justify-center text-xs font-bold">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black"
+                style={{ background: "linear-gradient(135deg, #b8872e, #e2b55a)", color: "#0d0d1a" }}
+              >
                 AI
               </div>
-              <h2 className="text-base font-semibold text-white">AIパーソナル分析</h2>
+              <h2 className="text-sm font-bold text-white">AIパーソナル分析</h2>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
               {aiInsight}
@@ -536,31 +663,33 @@ export default function ResultPage() {
           </motion.div>
         )}
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55 }}
-          className="space-y-3"
-        >
+        {/* ===== SHARE ===== */}
+        <motion.div {...fadeUp(0.55)} className="space-y-3">
           <a
-            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`ハイキャリア転職力診断で「${result.type}」タイプと診断されました！\n\nあなたも診断してみてください👇`)}&url=${encodeURIComponent("https://highcareer-diagnosis.vercel.app")}`}
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+              `ハイキャリア転職力診断で「${result.type}」タイプと診断されました！\n\nあなたも診断してみてください👇`
+            )}&url=${encodeURIComponent("https://highcareer-diagnosis.vercel.app")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full bg-white/5 border border-white/10 hover:border-white/30 text-white font-medium py-3 rounded-xl text-base text-center transition"
+            className="block w-full py-3 rounded-xl text-sm text-center font-medium transition-all hover:border-white/20 hover:text-white"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "#9ca3af",
+            }}
           >
             結果をXでシェアする
           </a>
         </motion.div>
 
-        {/* Retry */}
-        <div className="text-center">
+        {/* ===== RETRY ===== */}
+        <div className="text-center pb-4">
           <button
             onClick={() => {
               reset();
               router.push("/");
             }}
-            className="text-gray-500 text-sm hover:text-gray-300 transition"
+            className="text-gray-600 text-sm hover:text-gray-400 transition"
           >
             もう一度診断する
           </button>
