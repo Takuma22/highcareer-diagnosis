@@ -90,121 +90,113 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090b1a] relative overflow-hidden">
-      {/* Background mesh */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[#e2b55a]/8 rounded-full blur-[120px]" />
-        <div className="absolute top-1/3 -left-32 w-80 h-80 bg-indigo-600/10 rounded-full blur-[80px]" />
-        <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-[#e2b55a]/6 rounded-full blur-[80px]" />
-        {/* Grid overlay */}
+    <div className="min-h-screen bg-[#090b1a]">
+      {/* ===== HERO — full-viewport background image ===== */}
+      <section className="relative w-full" style={{ minHeight: "85vh" }}>
+        {/* Background image */}
+        <img
+          src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=1600&q=85"
+          alt="ハイキャリアのビジネスパーソン"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+
+        {/* Navy dark overlay */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0"
           style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
+            background:
+              "linear-gradient(160deg, rgba(9,11,26,0.72) 0%, rgba(7,12,35,0.68) 50%, rgba(9,11,26,0.80) 100%)",
           }}
         />
-      </div>
 
-      <div className="relative z-10 max-w-xl mx-auto px-4 pt-10 pb-16">
-        {/* ===== HERO ===== */}
-        <motion.div
-          initial={{ opacity: 0, y: -24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10"
-        >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 mb-5">
-            <span
-              className="text-xs font-bold tracking-widest px-4 py-1.5 rounded-full border"
-              style={{
-                background: "rgba(226,181,90,0.12)",
-                borderColor: "rgba(226,181,90,0.35)",
-                color: "#e2b55a",
-              }}
-            >
-              無料 AI 診断
-            </span>
-          </div>
+        {/* Gold shimmer */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(226,181,90,0.07) 0%, transparent 55%)",
+          }}
+        />
 
-          {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl font-black leading-tight mb-4 tracking-tight">
-            <span className="text-white">あなたはコンサルで</span>
-            <br />
-            <span className="gradient-text">年収を最大化</span>
-            <br />
-            <span className="text-white">できますか？</span>
-          </h1>
+        {/* Bottom fade to page bg */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-32"
+          style={{
+            background: "linear-gradient(to bottom, transparent, #090b1a)",
+          }}
+        />
 
-          <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-8 max-w-md mx-auto">
-            28問・約5分のAI診断で、コンサル適性と<br className="hidden sm:block" />
-            年収ジャンプアップの可能性を数値で可視化
-          </p>
-
-          {/* Stats row */}
-          <div className="flex justify-center items-center gap-0 mb-8">
-            {[
-              { value: "8タイプ", label: "診断結果" },
-              { value: "約5分", label: "所要時間" },
-              { value: "AI分析", label: "年収予測付き" },
-            ].map((stat, i) => (
-              <div key={stat.label} className="flex items-center">
-                <div className="text-center px-5 py-2">
-                  <div className="text-xl sm:text-2xl font-black gradient-text">{stat.value}</div>
-                  <div className="text-[11px] text-gray-500 mt-0.5">{stat.label}</div>
-                </div>
-                {i < 2 && (
-                  <div className="w-px h-8 bg-white/10" />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Hero image */}
-          <div
-            className="relative w-full rounded-2xl overflow-hidden"
-            style={{
-              height: "220px",
-              border: "1px solid rgba(226,181,90,0.25)",
-              boxShadow: "0 0 40px rgba(226,181,90,0.1), 0 8px 32px rgba(0,0,0,0.5)",
-            }}
+        {/* Hero content */}
+        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4"
+          style={{ minHeight: "85vh" }}>
+          <motion.div
+            initial={{ opacity: 0, y: -24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="max-w-2xl mx-auto"
           >
-            <img
-              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80"
-              alt="ハイキャリアのビジネスパーソン"
-              className="w-full h-full object-cover object-top"
-            />
-            {/* Dark gradient overlay — bottom to top */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(to top, rgba(9,11,26,0.85) 0%, rgba(9,11,26,0.3) 50%, rgba(9,11,26,0.15) 100%)",
-              }}
-            />
-            {/* Gold shimmer overlay */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(226,181,90,0.08) 0%, transparent 60%)",
-              }}
-            />
-            {/* Bottom caption */}
-            <div className="absolute bottom-0 left-0 right-0 px-5 py-4">
-              <p className="text-white/90 text-sm font-semibold tracking-wide">
-                コンサルファームで年収を最大化するチャンスが、あなたにある
-              </p>
-              <p className="text-[#e2b55a]/80 text-xs mt-0.5">
-                転職者の平均年収アップ率 +38%
-              </p>
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 mb-6">
+              <span
+                className="text-xs font-bold tracking-widest px-5 py-2 rounded-full border"
+                style={{
+                  background: "rgba(226,181,90,0.15)",
+                  borderColor: "rgba(226,181,90,0.4)",
+                  color: "#e2b55a",
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                無料 AI 診断
+              </span>
             </div>
-          </div>
-        </motion.div>
 
-        {/* ===== FORM ===== */}
+            {/* Headline */}
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-6 tracking-tight">
+              <span className="text-white">あなたはコンサルで</span>
+              <br />
+              <span className="gradient-text">年収を最大化</span>
+              <br />
+              <span className="text-white">できますか？</span>
+            </h1>
+
+            <p className="text-gray-200 text-lg sm:text-xl leading-relaxed mb-10 max-w-lg mx-auto"
+              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
+              28問・約5分のAI診断で、コンサル適性と<br className="hidden sm:block" />
+              年収ジャンプアップの可能性を数値で可視化
+            </p>
+
+            {/* Stats row */}
+            <div className="inline-flex items-center gap-0 mb-10 rounded-2xl px-2 py-2"
+              style={{
+                background: "rgba(9,11,26,0.55)",
+                border: "1px solid rgba(226,181,90,0.2)",
+                backdropFilter: "blur(12px)",
+              }}>
+              {[
+                { value: "8タイプ", label: "診断結果" },
+                { value: "約5分", label: "所要時間" },
+                { value: "AI分析", label: "年収予測付き" },
+              ].map((stat, i) => (
+                <div key={stat.label} className="flex items-center">
+                  <div className="text-center px-6 py-2">
+                    <div className="text-2xl sm:text-3xl font-black gradient-text">{stat.value}</div>
+                    <div className="text-[11px] text-gray-400 mt-0.5">{stat.label}</div>
+                  </div>
+                  {i < 2 && <div className="w-px h-10 bg-white/15" />}
+                </div>
+              ))}
+            </div>
+
+            {/* Sub caption */}
+            <p className="text-[#e2b55a]/80 text-sm font-medium tracking-wide">
+              転職者の平均年収アップ率 +38%
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ===== FORM ===== */}
+      <div className="max-w-xl mx-auto px-4 pb-16 -mt-4">
         <motion.form
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
