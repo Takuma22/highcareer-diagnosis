@@ -144,7 +144,7 @@ export default function HomePage() {
           </p>
 
           {/* Stats row */}
-          <div className="flex justify-center items-center gap-0 mb-2">
+          <div className="flex justify-center items-center gap-0 mb-8">
             {[
               { value: "8タイプ", label: "診断結果" },
               { value: "約5分", label: "所要時間" },
@@ -160,6 +160,47 @@ export default function HomePage() {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Hero image */}
+          <div
+            className="relative w-full rounded-2xl overflow-hidden"
+            style={{
+              height: "220px",
+              border: "1px solid rgba(226,181,90,0.25)",
+              boxShadow: "0 0 40px rgba(226,181,90,0.1), 0 8px 32px rgba(0,0,0,0.5)",
+            }}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80"
+              alt="ハイキャリアのビジネスパーソン"
+              className="w-full h-full object-cover object-top"
+            />
+            {/* Dark gradient overlay — bottom to top */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(9,11,26,0.85) 0%, rgba(9,11,26,0.3) 50%, rgba(9,11,26,0.15) 100%)",
+              }}
+            />
+            {/* Gold shimmer overlay */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(226,181,90,0.08) 0%, transparent 60%)",
+              }}
+            />
+            {/* Bottom caption */}
+            <div className="absolute bottom-0 left-0 right-0 px-5 py-4">
+              <p className="text-white/90 text-sm font-semibold tracking-wide">
+                コンサルファームで年収を最大化するチャンスが、あなたにある
+              </p>
+              <p className="text-[#e2b55a]/80 text-xs mt-0.5">
+                転職者の平均年収アップ率 +38%
+              </p>
+            </div>
           </div>
         </motion.div>
 
