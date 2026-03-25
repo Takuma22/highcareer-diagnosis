@@ -95,7 +95,7 @@ export default function HomePage() {
       <section className="relative w-full" style={{ minHeight: "85vh" }}>
         {/* Background image */}
         <img
-          src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=1600&q=85"
+          src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=1600&q=85"
           alt="ハイキャリアのビジネスパーソン"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
@@ -151,7 +151,7 @@ export default function HomePage() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-6 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6 tracking-tight">
               <span className="text-white">あなたはコンサルで</span>
               <br />
               <span className="gradient-text">年収を最大化</span>
@@ -159,14 +159,14 @@ export default function HomePage() {
               <span className="text-white">できますか？</span>
             </h1>
 
-            <p className="text-gray-200 text-lg sm:text-xl leading-relaxed mb-10 max-w-lg mx-auto"
+            <p className="text-gray-200 text-base sm:text-lg leading-relaxed mb-8 max-w-sm sm:max-w-lg mx-auto"
               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
-              28問・約5分のAI診断で、コンサル適性と<br className="hidden sm:block" />
+              28問・約5分のAI診断で、コンサル適性と
               年収ジャンプアップの可能性を数値で可視化
             </p>
 
             {/* Stats row */}
-            <div className="inline-flex items-center gap-0 mb-10 rounded-2xl px-2 py-2"
+            <div className="flex items-center gap-0 mb-8 rounded-2xl px-2 py-2 w-fit mx-auto"
               style={{
                 background: "rgba(9,11,26,0.55)",
                 border: "1px solid rgba(226,181,90,0.2)",
@@ -419,7 +419,7 @@ export default function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="flex justify-center items-center gap-6 mt-6 text-xs text-gray-600"
+          className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 mt-6 text-xs text-gray-600"
         >
           <span className="flex items-center gap-1.5">
             <span style={{ color: "#e2b55a" }}>✓</span> 完全無料
