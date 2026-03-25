@@ -118,11 +118,10 @@ export const useDiagnosisStore = create<DiagnosisStore>((set, get) => ({
     const axisPercentage = calculateAxisPercentage(axisScore);
     const typeData = diagnosisTypeData[diagnosisType];
 
-    // コンサルフィット度を動的計算: 全問最高(avgRaw=100)→95%以上
+    // コンサルフィット度を動的計算: 全部1(avgRaw=20)→5%, 平均(avgRaw=50)→47%, 全部5(avgRaw=100)→98%
     const avgRaw = (axisScore.execution + axisScore.strategy + axisScore.interpersonal +
       axisScore.expertise + axisScore.leadership + axisScore.adaptability) / 6;
-    const dynamicFit = Math.round(Math.min(98, avgRaw * 0.9 + 5));
-    const consultingFit = Math.max(typeData.consultingFit, dynamicFit);
+    const consultingFit = Math.round(Math.min(98, Math.max(5, (avgRaw - 30) * 2.375)));
 
     // オールラウンダー かつ 全軸高スコア(avgRaw>=80 = 偏差値60以上)はポジティブな課題表示
     const challenges =

@@ -619,13 +619,24 @@ export function calculateSalaryProjection(
 
   // コンサルフィット度補正
   let adjustedChangeRate = changeRate + expBonus;
-  if (consultingFit < 60) {
+  if (consultingFit <= 30) {
+    // 低フィット: 年収ダウンのリスクあり
     return {
       current: currentSalary,
-      year1: Math.round(currentSalary * 0.95),
-      year3: Math.round(currentSalary * 1.05),
-      year5: Math.round(currentSalary * 1.20),
-      bestCase: Math.round(currentSalary * 1.35),
+      year1: Math.round(currentSalary * 0.85),
+      year3: Math.round(currentSalary * 0.82),
+      year5: Math.round(currentSalary * 0.88),
+      bestCase: Math.round(currentSalary * 0.98),
+      currency: "万円",
+    };
+  } else if (consultingFit <= 50) {
+    // 中低フィット: ほぼ横ばい〜微増
+    return {
+      current: currentSalary,
+      year1: Math.round(currentSalary * 0.97),
+      year3: Math.round(currentSalary * 1.04),
+      year5: Math.round(currentSalary * 1.12),
+      bestCase: Math.round(currentSalary * 1.22),
       currency: "万円",
     };
   } else if (consultingFit < 80) {

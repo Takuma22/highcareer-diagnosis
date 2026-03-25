@@ -63,6 +63,7 @@ export default function ResultPage() {
   );
   const isLowFit = result.consultingFit < 65;
   const hasSalaryRisk = salaryProjection.year1 < salaryProjection.current;
+  const hasSalaryDecline = salaryProjection.year3 < salaryProjection.current;
 
   const totalAnswers = answers.length;
   const avgScore =
@@ -378,14 +379,14 @@ export default function ResultPage() {
               <div className="flex items-center gap-2 mb-1">
                 <div className="gold-divider" />
                 <h2 className="text-sm font-bold text-white">
-                  {hasSalaryRisk ? "転職後の年収シミュレーション" : "年収ジャンプアップ予測"}
+                  {hasSalaryDecline ? "⚠️ 年収ダウンのリスクあり" : hasSalaryRisk ? "転職後の年収シミュレーション" : "年収ジャンプアップ予測"}
                 </h2>
               </div>
             </div>
             <div className="text-right flex-shrink-0">
               <div
                 className={`text-4xl font-black leading-none ${
-                  jumpRate >= 0 ? "gradient-text" : "text-amber-400"
+                  jumpRate >= 0 ? "gradient-text" : hasSalaryDecline ? "text-red-400" : "text-amber-400"
                 }`}
               >
                 {jumpRate >= 0 ? "+" : ""}{jumpRate}%
@@ -394,7 +395,18 @@ export default function ResultPage() {
             </div>
           </div>
 
-          {hasSalaryRisk && (
+          {hasSalaryDecline ? (
+            <div
+              className="mb-4 rounded-xl px-4 py-3 text-xs leading-relaxed"
+              style={{
+                background: "rgba(239,68,68,0.08)",
+                border: "1px solid rgba(239,68,68,0.3)",
+                color: "#f87171",
+              }}
+            >
+              <span className="font-bold">現在の年収を下回る可能性があります。</span>コンサル適性スコアが低く、即転職すると年収ダウンのリスクがあります。現職でのスキルアップを優先することを強くお勧めします。
+            </div>
+          ) : hasSalaryRisk && (
             <div
               className="mb-4 rounded-xl px-4 py-3 text-xs leading-relaxed"
               style={{
@@ -411,20 +423,26 @@ export default function ResultPage() {
           <div className="grid grid-cols-2 gap-3 mb-5">
             {[
               { label: "現在", value: salaryProjection.current, color: "#9ca3af", isMain: false },
-              { label: "3年後", value: salaryProjection.year3, color: "#e2b55a", isMain: true },
-              { label: "5年後", value: salaryProjection.year5, color: "#f0c97a", isMain: false },
-              { label: "最高値", value: salaryProjection.bestCase, color: "#f5d78a", isMain: false },
+              { label: "3年後", value: salaryProjection.year3, color: hasSalaryDecline ? "#f87171" : "#e2b55a", isMain: true },
+              { label: "5年後", value: salaryProjection.year5, color: salaryProjection.year5 < salaryProjection.current ? "#fca5a5" : "#f0c97a", isMain: false },
+              { label: "最高値", value: salaryProjection.bestCase, color: salaryProjection.bestCase < salaryProjection.current ? "#fca5a5" : "#f5d78a", isMain: false },
             ].map((item) => (
               <div
                 key={item.label}
                 className="rounded-xl p-4"
                 style={
                   item.isMain
-                    ? {
-                        background: "linear-gradient(135deg, rgba(226,181,90,0.15), rgba(226,181,90,0.05))",
-                        border: "1.5px solid rgba(226,181,90,0.35)",
-                        boxShadow: "0 0 20px rgba(226,181,90,0.1)",
-                      }
+                    ? hasSalaryDecline
+                      ? {
+                          background: "linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04))",
+                          border: "1.5px solid rgba(239,68,68,0.3)",
+                          boxShadow: "0 0 20px rgba(239,68,68,0.08)",
+                        }
+                      : {
+                          background: "linear-gradient(135deg, rgba(226,181,90,0.15), rgba(226,181,90,0.05))",
+                          border: "1.5px solid rgba(226,181,90,0.35)",
+                          boxShadow: "0 0 20px rgba(226,181,90,0.1)",
+                        }
                     : {
                         background: "rgba(255,255,255,0.04)",
                         border: "1px solid rgba(255,255,255,0.06)",
