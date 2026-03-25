@@ -166,7 +166,7 @@ export default function HomePage() {
             </p>
 
             {/* Stats row */}
-            <div className="flex items-center gap-0 mb-8 rounded-2xl px-2 py-2 w-fit mx-auto"
+            <div className="inline-flex items-center mb-8 rounded-2xl px-2 py-2 mx-auto"
               style={{
                 background: "rgba(9,11,26,0.55)",
                 border: "1px solid rgba(226,181,90,0.2)",
@@ -177,12 +177,12 @@ export default function HomePage() {
                 { value: "約5分", label: "所要時間" },
                 { value: "AI分析", label: "年収予測付き" },
               ].map((stat, i) => (
-                <div key={stat.label} className="flex items-center">
-                  <div className="text-center px-6 py-2">
+                <div key={stat.label} className="flex items-center flex-shrink-0">
+                  <div className="text-center px-4 sm:px-6 py-2 whitespace-nowrap">
                     <div className="text-2xl sm:text-3xl font-black gradient-text">{stat.value}</div>
                     <div className="text-[11px] text-gray-400 mt-0.5">{stat.label}</div>
                   </div>
-                  {i < 2 && <div className="w-px h-10 bg-white/15" />}
+                  {i < 2 && <div className="flex-shrink-0 w-px h-10 bg-white/15" />}
                 </div>
               ))}
             </div>
