@@ -21,6 +21,20 @@ import { useDiagnosisStore } from "@/store/diagnosisStore";
 
 const CONSULTATION_URL = "https://line.me/";
 
+const TYPE_IMAGES: Record<string, string> = {
+  指揮官: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+  参謀: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80",
+  外交官: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80",
+  スペシャリスト: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=80",
+  オールラウンダー: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80",
+  チャレンジャー: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=800&q=80",
+  アナリスト: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+  準備中: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&q=80",
+};
+
+const CHANNEL_ICON_URL =
+  "https://yt3.googleusercontent.com/ZzKmYL74N-z6H8GhojpkeqbjuqNoePEEvlEtIjshnN3CVNhF8lT-RZCaba0moqt5A4Hkpfat=s176-c-k-c0x00ffffff-no-rj";
+
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -93,34 +107,49 @@ export default function ResultPage() {
       <div className="relative z-10 max-w-xl mx-auto px-4 py-10 space-y-5">
 
         {/* ===== TYPE BADGE (Hero) ===== */}
-        <motion.div {...fadeUp(0)} className="text-center">
+        <motion.div {...fadeUp(0)} className="relative -mx-4 overflow-hidden rounded-none" style={{ minHeight: "300px" }}>
+          {/* Background image */}
           <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 text-xs font-bold tracking-widest"
-            style={{
-              background: "rgba(226,181,90,0.1)",
-              border: "1px solid rgba(226,181,90,0.3)",
-              color: "#e2b55a",
-            }}
-          >
-            ✦ 診断結果
-          </div>
-
-          {/* Type name */}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${TYPE_IMAGES[result.type] ?? TYPE_IMAGES["オールラウンダー"]})` }}
+          />
+          {/* Dark overlay */}
           <div
-            className="inline-block px-8 py-3 rounded-2xl mb-4"
-            style={{
-              background: "linear-gradient(135deg, rgba(226,181,90,0.15), rgba(226,181,90,0.05))",
-              border: "1.5px solid rgba(226,181,90,0.4)",
-              boxShadow: "0 0 40px rgba(226,181,90,0.2)",
-            }}
-          >
-            <div className="text-5xl sm:text-6xl font-black gradient-text mb-1 leading-tight">
-              {result.type}
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(to bottom, rgba(9,11,26,0.45) 0%, rgba(9,11,26,0.82) 100%)" }}
+          />
+          {/* Content */}
+          <div className="relative z-10 text-center px-4 pt-12 pb-10">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 text-xs font-bold tracking-widest"
+              style={{
+                background: "rgba(226,181,90,0.15)",
+                border: "1px solid rgba(226,181,90,0.4)",
+                color: "#e2b55a",
+                backdropFilter: "blur(4px)",
+              }}
+            >
+              ✦ 診断結果
             </div>
-          </div>
 
-          <h1 className="text-xl sm:text-2xl font-black text-white mb-2">{result.title}</h1>
-          <p className="text-gray-400 text-sm">{result.subtitle}</p>
+            {/* Type name */}
+            <div
+              className="inline-block px-8 py-3 rounded-2xl mb-4"
+              style={{
+                background: "linear-gradient(135deg, rgba(226,181,90,0.2), rgba(226,181,90,0.08))",
+                border: "1.5px solid rgba(226,181,90,0.5)",
+                boxShadow: "0 0 40px rgba(226,181,90,0.25)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              <div className="text-5xl sm:text-6xl font-black gradient-text mb-1 leading-tight">
+                {result.type}
+              </div>
+            </div>
+
+            <h1 className="text-xl sm:text-2xl font-black text-white mb-2">{result.title}</h1>
+            <p className="text-gray-300 text-sm">{result.subtitle}</p>
+          </div>
         </motion.div>
 
         {/* ===== DESCRIPTION ===== */}
@@ -643,6 +672,26 @@ export default function ResultPage() {
                 <div className="gold-divider" />
                 <h2 className="text-sm font-bold text-white">次のキャリアステップへ</h2>
               </div>
+              {/* Channel identity */}
+              <div className="flex items-center gap-3 mb-5">
+                <img
+                  src={CHANNEL_ICON_URL}
+                  alt="ケント | 現役コンサルの本音"
+                  className="w-16 h-16 rounded-full flex-shrink-0 object-cover"
+                  style={{ border: "2px solid rgba(226,181,90,0.5)" }}
+                />
+                <div>
+                  <div className="text-white font-bold text-sm">ケント</div>
+                  <div className="text-gray-400 text-xs">現役コンサルの本音</div>
+                  <div
+                    className="text-[10px] mt-0.5 px-2 py-0.5 rounded-full inline-block"
+                    style={{ background: "rgba(226,181,90,0.1)", color: "#e2b55a", border: "1px solid rgba(226,181,90,0.25)" }}
+                  >
+                    現役コンサルタント
+                  </div>
+                </div>
+              </div>
+
               <p className="text-gray-300 text-sm leading-relaxed mb-5">{text}</p>
               <motion.a
                 href={CONSULTATION_URL}
