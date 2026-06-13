@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# highcareer-diagnosis
 
-## Getting Started
+Next.js (App Router) 製のアプリ。1 つのリポジトリに 2 つの独立したアプリが入っています。
 
-First, run the development server:
+| アプリ | パス | 内容 |
+| --- | --- | --- |
+| ハイキャリア転職診断 | `/` | コンサル適性を AI 診断（既存） |
+| 🎉 ホームパーティー管理 | **`/party`** | 主催者向けのイベント・ゲスト管理（新規） |
+
+## ホームパーティー管理アプリ（`/party`）
+
+ホームパーティーの主催者が、日時とゲストを管理するためのアプリです。
+
+- **イベント管理** — 日時・場所・メモ付きで作成 / 編集 / 削除
+- **ゲスト登録** — 名前と職業を入力
+- **職業の自動カテゴライズ** — 職業から汎用カテゴリ（IT・エンジニア / 金融・コンサル / 医療 / クリエイティブ など全 14 種）を自動推定してタグ付け
+- **タグの手動調整（複数可）** — プルダウンから各ゲストのタグを複数選択・追加・削除
+- **出欠管理** — 参加 / 未定 / 不参加 / 未回答をワンタップ切り替え
+- **集計** — 出欠サマリと職業カテゴリ分布を円グラフで可視化
+- **ブラウザ保存** — データは端末の localStorage に保存（バックエンド / DB 不要、API キー不要）
+
+## ローカルで動かす
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで以下を開きます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- ホームパーティー管理: **http://localhost:3000/party**
+- キャリア診断: http://localhost:3000/
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 公開してチェックする（Vercel ワンクリック）
 
-## Learn More
+このボタンから自分の Vercel アカウントにデプロイすると、公開 URL が発行されます。
 
-To learn more about Next.js, take a look at the following resources:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Takuma22/highcareer-diagnosis)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+デプロイ後、**`https://<発行されたURL>/party`** を開くとパーティー管理アプリが表示されます（ルート `/` は診断アプリです）。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> 補足: パーティー管理アプリは API キー不要でそのまま動きます。
+> 診断アプリ（`/`）の AI 機能だけは環境変数 `ANTHROPIC_API_KEY` が必要です。
