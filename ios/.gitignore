@@ -1,0 +1,10 @@
+# XcodeGen で生成するため、プロジェクトファイルはコミットしない
+*.xcodeproj
+*.xcworkspace
+
+# Xcode / build
+.DS_Store
+DerivedData/
+build/
+xcuserdata/
+*.xcuserstate
