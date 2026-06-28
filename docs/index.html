@@ -323,7 +323,11 @@ function showUsing() {
 function closeSession() {
   clearInterval(timer); timer = null;
   const log = state.logs.find(l => l.id === active.logId);
-  if (log && !log.closedAt) { log.closedAt = Date.now(); log.durationSec = liveSec(log); save(); }
+  if (log && !log.closedAt) {
+    log.durationSec = Math.max(0, Math.floor((Date.now() - log.openedAt) / 1000));
+    log.closedAt = Date.now();
+    save();
+  }
   active = null;
   document.getElementById("modalRoot").innerHTML = "";
   render();
