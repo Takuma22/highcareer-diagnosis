@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>アプリ中毒ガード</title>
+<meta name="description" content="開く前に回数・時間・理由を突きつける、自分用のローカルアプリ" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#6366f1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="中毒ガード" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<style>
+  :root {
+    --bg: #090b1a; --fg: #eef0ff; --muted: #8b8fa3;
+    --card: rgba(255,255,255,.04); --border: rgba(255,255,255,.08);
+    --accent: #6366f1; --accent2: #a855f7;
+    --good: #34d399; --bad: #f87171;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--fg); min-height: 100vh;
+    font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 28px 16px 60px; }
+  header { text-align: center; margin-bottom: 22px; }
+  header .logo { font-size: 44px; }
+  h1 { font-size: 26px; font-weight: 900; margin: 8px 0 4px; letter-spacing: -.02em; }
+  h1 .g { background: linear-gradient(135deg,#6366f1,#a855f7,#ec4899);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: var(--muted); font-size: 13px; margin: 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+  .row { display: flex; align-items: center; gap: 14px; }
+  .summary { display: flex; gap: 28px; align-items: flex-end; margin-bottom: 4px; }
+  .summary .big { font-size: 30px; font-weight: 900; }
+  .summary .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .sec-title { display: flex; justify-content: space-between; align-items: center; margin: 22px 4px 10px; }
+  .sec-title h2 { font-size: 13px; font-weight: 700; color: #c3c6d4; margin: 0; }
+  .linkbtn { background: none; border: none; color: #8aa6ef; font-size: 12px; font-weight: 600; cursor: pointer; padding: 4px; }
+  .app { display: flex; align-items: center; gap: 14px; }
+  .app .emoji { font-size: 28px; width: 40px; text-align: center; }
+  .app .name { font-weight: 700; }
+  .app .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .grow { flex: 1; min-width: 0; }
+  .openbtn { border: none; border-radius: 12px; padding: 9px 18px; font-weight: 700; color: #fff; font-size: 14px;
+    background: linear-gradient(135deg,#6366f1,#a855f7); cursor: pointer; }
+  .iconbtn { background: none; border: none; color: #5b5f72; font-size: 18px; cursor: pointer; padding: 6px; }
+  .field { width: 100%; background: rgba(255,255,255,.05); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 11px 14px; color: var(--fg); font-size: 15px; outline: none; }
+  .field:focus { border-color: rgba(99,102,241,.6); }
+  .field::placeholder { color: rgba(255,255,255,.25); }
+  .btn { border: none; border-radius: 11px; padding: 11px; font-weight: 800; cursor: pointer; font-size: 14px; }
+  .btn-primary { background: linear-gradient(135deg,#6366f1,#a855f7); color: #fff; width: 100%; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .muted { color: var(--muted); }
+  .center { text-align: center; }
+  .small { font-size: 12px; }
+  .xsmall { font-size: 11px; }
+  .hidden { display: none !important; }
+
+  /* Gate overlay */
+  .overlay { position: fixed; inset: 0; background: rgba(4,5,16,.72); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 50; }
+  .gate { background: #fff; color: #111; width: 100%; max-width: 420px; border-radius: 26px; padding: 22px; }
+  .gate .gh { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .gate .gh .ic { width: 36px; height: 36px; border-radius: 9px; background: #000; color: #fff; display: flex;
+    align-items: center; justify-content: center; font-size: 18px; }
+  .gate .gh .t { font-weight: 700; font-size: 15px; }
+  .warn { background: #fdecec; border-radius: 18px; padding: 18px; margin-bottom: 18px; }
+  .warn .cnt { font-size: 13px; font-weight: 700; color: #e0556a; margin: 0 0 4px; }
+  .warn .line { font-size: 15px; margin: 0 0 14px; color: #222; }
+  .warn .line b { font-size: 22px; color: #e0556a; }
+  .warn .bd { display: flex; align-items: center; gap: 8px; margin: 7px 0; }
+  .warn .bd .nm { font-size: 13px; color: #444; width: 78px; }
+  .warn .bd .track { flex: 1; height: 6px; background: rgba(0,0,0,.06); border-radius: 999px; overflow: hidden; }
+  .warn .bd .fill { height: 100%; border-radius: 999px; }
+  .warn .bd .v { font-size: 13px; color: #555; width: 56px; text-align: right; }
+  .warn .ask { font-weight: 900; font-size: 15px; margin: 6px 0 0; color: #111; }
+  .qh { font-weight: 900; font-size: 18px; margin: 0 0 12px; color: #111; }
+  .reason { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px; border: none;
+    border-radius: 12px; background: #f2f2f5; text-align: left; font-size: 15px; color: #222; margin-bottom: 10px; cursor: pointer; }
+  .reason .dot { width: 10px; height: 10px; }
+  .note { text-align: center; font-size: 12px; color: #999; margin: 6px 0 0; }
+  .ghost { background: none; border: none; width: 100%; text-align: center; padding: 10px; font-size: 13px; font-weight: 600;
+    color: #7c6cf0; cursor: pointer; }
+  .ghost.gray { color: #999; font-weight: 400; }
+
+  /* Using overlay */
+  .using { background: var(--card); border: 1px solid var(--border); border-radius: 26px; padding: 36px 28px;
+    width: 100%; max-width: 360px; text-align: center; }
+  .using .e { font-size: 56px; }
+  .using .clock { font-size: 46px; font-weight: 900; margin: 14px 0; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">📵</div>
+    <h1><span class="g">アプリ中毒</span> ガード</h1>
+    <p>開く前に「回数・時間・理由」を突きつける、自分のためのアプリ</p>
+  </header>
+
+  <div class="card">
+    <div class="summary">
+      <div><div class="big" id="sumCount">0</div><div class="lbl">今日 開いた回数</div></div>
+      <div><div class="big" id="sumTime">0秒</div><div class="lbl">今日 使った時間</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title">
+    <h2>ガードするアプリ</h2>
+    <button class="linkbtn" id="toggleAdd">＋ アプリを追加</button>
+  </div>
+
+  <form class="card hidden" id="addForm">
+    <div class="row" style="gap:10px; margin-bottom:10px;">
+      <input class="field" id="fEmoji" placeholder="📱" maxlength="4" style="width:64px; text-align:center;" />
+      <input class="field" id="fName" placeholder="アプリ名（例: TikTok）" />
+    </div>
+    <input class="field" id="fUrl" placeholder="URL（任意 / 開く確定時に遷移）" style="margin-bottom:10px;" />
+    <button class="btn btn-primary" type="submit">追加する</button>
+  </form>
+
+  <div id="appList"></div>
+
+  <div class="sec-title"><h2>理由の選択肢</h2></div>
+  <div class="card"><div id="reasonChips" style="display:flex; flex-wrap:wrap; gap:8px;"></div></div>
+
+  <p class="center xsmall muted" style="margin-top:26px;">
+    データは端末内（localStorage）にのみ保存されます<br/>
+    ※ Web版のため他アプリの起動自体はブロックできません（このアプリ内のランチャーです）
+  </p>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+const LS = "appguard-pwa-v1";
+const DEFAULT_REASONS = [
+  { id:"kill-time", label:"暇つぶし", kind:"bad" },
+  { id:"nantonaku", label:"なんとなく", kind:"bad" },
+  { id:"work", label:"仕事で", kind:"good" },
+  { id:"research", label:"調べ物", kind:"good" },
+];
+const DEFAULT_APPS = [
+  { id:"x", name:"X", emoji:"𝕏", url:"https://x.com" },
+  { id:"ig", name:"Instagram", emoji:"📷", url:"https://instagram.com" },
+  { id:"yt", name:"YouTube", emoji:"▶️", url:"https://youtube.com" },
+];
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(LS));
+    if (d && d.apps) return d;
+  } catch (e) {}
+  return { apps: DEFAULT_APPS, reasons: DEFAULT_REASONS, logs: [] };
+}
+function save() { localStorage.setItem(LS, JSON.stringify(state)); }
+let state = load();
+let active = null; // {logId, appId, recorded, start}
+let timer = null;
+
+const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+const isToday = (t) => { const d=new Date(t), n=new Date();
+  return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate(); };
+
+function fmtDur(sec) {
+  sec = Math.max(0, Math.floor(sec));
+  const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+  if (h>0) return m>0?`${h}時間${m}分`:`${h}時間`;
+  if (m>0) return `${m}分`;
+  return `${s}秒`;
+}
+function fmtClock(sec) {
+  sec = Math.max(0, Math.floor(sec));
+  const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+  const p=(n)=>String(n).padStart(2,"0");
+  return h>0?`${h}:${p(m)}:${p(s)}`:`${p(m)}:${p(s)}`;
+}
+function liveSec(log) {
+  if (log.closedAt) return log.durationSec;
+  return Math.max(0, Math.floor((Date.now()-log.openedAt)/1000));
+}
+function stats(appId) {
+  const logs = state.logs.filter(l => l.recorded && isToday(l.openedAt) && (!appId || l.appId===appId));
+  let total = 0; const bySec = {}, byCnt = {};
+  logs.forEach(l => { const s=liveSec(l); total+=s;
+    const k=l.reasonId||"__"; bySec[k]=(bySec[k]||0)+s; byCnt[k]=(byCnt[k]||0)+1; });
+  const breakdown = state.reasons.map(r => ({ reason:r, sec:bySec[r.id]||0, count:byCnt[r.id]||0 }))
+    .filter(b => b.count>0).sort((a,b)=>b.sec-a.sec);
+  return { count: logs.length, totalSec: total, breakdown };
+}
+
+function render() {
+  const all = stats();
+  document.getElementById("sumCount").textContent = all.count;
+  document.getElementById("sumTime").textContent = fmtDur(all.totalSec);
+
+  const list = document.getElementById("appList");
+  list.innerHTML = "";
+  if (state.apps.length === 0) {
+    list.innerHTML = `<div class="card center muted small">アプリがありません。「＋ アプリを追加」から登録しましょう。</div>`;
+  }
+  state.apps.forEach(app => {
+    const st = stats(app.id);
+    const el = document.createElement("div");
+    el.className = "card app";
+    el.innerHTML = `
+      <div class="emoji">${app.emoji}</div>
+      <div class="grow">
+        <div class="name">${esc(app.name)}</div>
+        <div class="meta">今日 ${st.count}回 ・ ${fmtDur(st.totalSec)}</div>
+      </div>
+      <button class="openbtn">開く</button>
+      <button class="iconbtn" title="削除">🗑</button>`;
+    el.querySelector(".openbtn").onclick = () => openGate(app);
+    el.querySelector(".iconbtn").onclick = () => {
+      if (confirm(`「${app.name}」を削除しますか？`)) {
+        state.apps = state.apps.filter(a => a.id !== app.id); save(); render();
+      }
+    };
+    list.appendChild(el);
+  });
+
+  const chips = document.getElementById("reasonChips");
+  chips.innerHTML = "";
+  state.reasons.forEach(r => {
+    const c = document.createElement("span");
+    c.className = "chip";
+    const col = r.kind==="good" ? "var(--good)" : "var(--bad)";
+    c.style.background = r.kind==="good" ? "rgba(52,211,153,.12)" : "rgba(248,113,113,.12)";
+    c.style.color = col;
+    c.innerHTML = `<span class="dot" style="background:${col}"></span>${esc(r.label)}`;
+    chips.appendChild(c);
+  });
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m])); }
+
+// ----- Gate -----
+function openGate(app) {
+  const st = stats(app.id);
+  const maxSec = Math.max(1, ...st.breakdown.map(b => b.sec));
+  const root = document.getElementById("modalRoot");
+
+  const breakdownHtml = st.breakdown.map(b => {
+    const col = b.reason.kind==="good" ? "#34c759" : "#ff5a5f";
+    return `<div class="bd">
+      <span class="dot" style="background:${col}"></span>
+      <span class="nm">${esc(b.reason.label)}</span>
+      <span class="track"><span class="fill" style="width:${(b.sec/maxSec)*100}%;background:${col}"></span></span>
+      <span class="v">${fmtDur(b.sec)}</span></div>`;
+  }).join("");
+
+  const warnHtml = st.count > 0 ? `
+    <p class="cnt">今日 ${st.count+1}回目</p>
+    <p class="line">今日はすでに <b>${fmtDur(st.totalSec)}</b> 開いています</p>
+    <p class="muted" style="font-size:12px;margin:0 0 6px;">その内訳</p>
+    ${breakdownHtml}
+    <p class="ask">本当に開く？</p>`
+    : `<p class="line" style="font-weight:700;margin:0;">今日はまだ開いていません。本当に開く？</p>`;
+
+  const reasonsHtml = state.reasons.map(r => {
+    const col = r.kind==="good" ? "#34c759" : "#ff5a5f";
+    return `<button class="reason" data-rid="${r.id}">
+      <span class="dot" style="background:${col}"></span>${esc(r.label)}</button>`;
+  }).join("");
+
+  root.innerHTML = `
+    <div class="overlay">
+      <div class="gate">
+        <div class="gh"><div class="ic">${app.emoji}</div><div class="t">${esc(app.name)} を開こうとしています</div></div>
+        <div class="warn">${warnHtml}</div>
+        <p class="qh">どうして開いたの？</p>
+        ${reasonsHtml}
+        <p class="note">ひとつ選ぶと記録されます</p>
+        <button class="ghost" data-act="norecord">記録せずに開く</button>
+        <button class="ghost gray" data-act="cancel">やっぱりやめる</button>
+      </div>
+    </div>`;
+
+  root.querySelectorAll(".reason").forEach(btn => {
+    btn.onclick = () => confirmOpen(app, btn.dataset.rid, true);
+  });
+  root.querySelector('[data-act="norecord"]').onclick = () => confirmOpen(app, null, false);
+  root.querySelector('[data-act="cancel"]').onclick = () => { root.innerHTML = ""; };
+}
+
+function confirmOpen(app, reasonId, recorded) {
+  const log = { id: uid(), appId: app.id, reasonId, recorded, openedAt: Date.now(), durationSec: 0 };
+  state.logs.push(log); save();
+  active = { logId: log.id, appId: app.id, recorded, url: app.url, name: app.name, emoji: app.emoji };
+  if (app.url) window.open(app.url, "_blank", "noopener");
+  showUsing();
+}
+
+function showUsing() {
+  const root = document.getElementById("modalRoot");
+  const log = state.logs.find(l => l.id === active.logId);
+  const reason = state.reasons.find(r => r.id === log.reasonId);
+  root.innerHTML = `
+    <div class="overlay">
+      <div class="using">
+        <div class="e">${active.emoji}</div>
+        <div class="muted small">${esc(active.name)} を使用中</div>
+        <div class="clock" id="clock">00:00</div>
+        <div class="small" style="margin-bottom:24px;color:${reason ? (reason.kind==="good"?"var(--good)":"var(--bad)") : "var(--muted)"}">
+          ${reason ? "理由: "+esc(reason.label) : "記録されていません"}</div>
+        <button class="btn btn-primary" id="closeBtn">閉じる</button>
+        <p class="note" style="color:var(--muted);margin-top:14px;">この時間が記録に積み上がっていきます</p>
+      </div>
+    </div>`;
+  const tick = () => { const el=document.getElementById("clock"); if(el) el.textContent = fmtClock(liveSec(log)); };
+  tick(); timer = setInterval(tick, 1000);
+  root.querySelector("#closeBtn").onclick = closeSession;
+}
+
+function closeSession() {
+  clearInterval(timer); timer = null;
+  const log = state.logs.find(l => l.id === active.logId);
+  if (log && !log.closedAt) { log.closedAt = Date.now(); log.durationSec = liveSec(log); save(); }
+  active = null;
+  document.getElementById("modalRoot").innerHTML = "";
+  render();
+}
+
+// ----- add app -----
+document.getElementById("toggleAdd").onclick = () => {
+  document.getElementById("addForm").classList.toggle("hidden");
+};
+document.getElementById("addForm").onsubmit = (e) => {
+  e.preventDefault();
+  const name = document.getElementById("fName").value.trim();
+  if (!name) return;
+  const emoji = document.getElementById("fEmoji").value.trim() || "📱";
+  let url = document.getElementById("fUrl").value.trim();
+  if (url && !/^https?:\/\//.test(url)) url = "https://" + url;
+  state.apps.push({ id: uid(), name, emoji, url: url || undefined }); save();
+  e.target.reset(); e.target.classList.add("hidden"); render();
+};
+
+// resume an in-progress session after reload? keep simple: ignore.
+render();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
