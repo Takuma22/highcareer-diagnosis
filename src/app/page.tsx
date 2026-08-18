@@ -151,13 +151,16 @@ export default function HomePage() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6 tracking-tight">
-              <span className="text-white">あなたはコンサルで</span>
-              <br />
-              <span className="gradient-text">年収を最大化</span>
-              <br />
-              <span className="text-white">できますか？</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-5 tracking-tight">
+              <span className="text-white">ハイキャリア</span>
+              <span className="gradient-text">転職適性診断</span>
             </h1>
+
+            {/* Sub-headline */}
+            <p className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-6"
+              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
+              あなたはコンサルで年収を最大化できますか？
+            </p>
 
             <p className="text-gray-200 text-base sm:text-lg leading-relaxed mb-8 max-w-sm sm:max-w-lg mx-auto"
               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
