@@ -19,7 +19,8 @@ import {
 } from "recharts";
 import { useDiagnosisStore } from "@/store/diagnosisStore";
 
-const CONSULTATION_URL = "https://line.me/";
+const CONSULTATION_URL =
+  "https://liff.line.me/2009379084-QJoley61/landing?follow=%40012vxlky&lp=fAvhJS&liff_id=2009379084-QJoley61";
 
 const TYPE_IMAGES: Record<string, string> = {
   指揮官: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
